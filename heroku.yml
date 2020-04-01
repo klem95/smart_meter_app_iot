@@ -1,7 +1,7 @@
 setup:
     addons:
       - plan: heroku-postgresql
-        as: HEROKU_POSTGRESQL_COBALT
+        as: postgresql-shaped-67538
   build:
     docker:
       web: Dockerfile
