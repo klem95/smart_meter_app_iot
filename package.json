@@ -1,9 +1,10 @@
 {
   "name": "smart_meter_app_iot-",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is an smart meter app",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/app.ts"
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,9 +12,6 @@
   "dependencies": {
     "@types/node": "^13.9.8",
     "express": "^4.17.1"
-  },
-  "scripts": {
-    "start": "node app.ts"
   }
 }
  
