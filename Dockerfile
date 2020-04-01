@@ -1,4 +1,5 @@
-FROM node:10
+# Getting base image
+FROM node:10 
 
 WORKDIR /usr/src/app
 
@@ -6,11 +7,14 @@ COPY ./package.json .
 COPY ./package-lock.json .
 
 RUN npm install
+RUN apt-get update 
 
-COPY . ./
+CMD [ "echo", "yo dawg" ]
 
-EXPOSE 3000
+# Bundle app source
+COPY . .
 
+EXPOSE 8080
 
-
-CMD npm start
+# Runs when applied to a container
+CMD [ "node", "src/app.ts" ]
