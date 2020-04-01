@@ -4,7 +4,7 @@
   "description": "This is an smart meter app",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/app.ts"
+    "start": "node ./src/app.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
