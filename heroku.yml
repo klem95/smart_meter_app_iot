@@ -1,8 +1,13 @@
 setup:
     addons:
-    - plan: heroku-postgresql
-      as: DATABASE
-build:
-docker:
-    web: Dockerfile
-    worker: . /Dockerfile
+      - plan: heroku-postgresql
+        as: HEROKU_POSTGRESQL_COBALT
+  build:
+    docker:
+      web: Dockerfile
+  release:
+    command:
+      - npm install
+    image: web
+  run:
+    web: npm start
