@@ -13,7 +13,7 @@
     "express": "^4.17.1"
   },
   "scripts": {
-    "start": "node src/app.ts"
+    "start": "node app.ts"
   }
 }
  
