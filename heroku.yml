@@ -1,13 +1,13 @@
 setup:
-    addons:
-      - plan: heroku-postgresql
-        as: postgresql-shaped-67538
-  build:
-    docker:
-      web: Dockerfile
-  release:
-    command:
-      - npm install
-    image: web
-  run:
-    web: npm start
+  addons:
+    - plan: heroku-postgresql
+      as: postgresql-shaped-67538
+build:
+  docker:
+    web: Dockerfile
+release:
+  command:
+    - npm install
+  image: web
+run:
+  web: npm start
