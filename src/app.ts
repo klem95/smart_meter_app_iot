@@ -1,14 +1,13 @@
-import { NextFunction, Request, Response } from 'express'
+import express from "express";
 
-const express = require('express')
-const path = require('path')
-const PORT = process.env.PORT || 5000
-
-
-express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .get('/', (req:Request, res:Response) => {
-      res.send("Hello my guy")
-  
-  })
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+(async () => {
+    // Make sure database is up to date
+    const app : express.Application = express()
+    const port = process.env.PORT || 3000
+    app.listen(port, (): void => {
+        console.log('Server is running at port ' + port)
+        if (process.env.PORT == null) {
+            console.log('The port was not given through an enviroment variable - falling back to 3000')
+        }
+    })
+})()
