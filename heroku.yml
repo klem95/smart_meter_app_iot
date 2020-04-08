@@ -10,4 +10,5 @@ release:
     - npm install
   image: web
 run:
+  web: docker-compose up
   web: npm start
