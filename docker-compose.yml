@@ -12,7 +12,7 @@ services:
         NODE_ENV: dev
         POSTGRES_USER: user
         POSTGRES_PASSWORD: pass
-        POSTGRES_DB: pensumpartner-dev-db
+        POSTGRES_DB: waterDb
     postgres:
       image: postgres:11
       ports:
@@ -20,6 +20,6 @@ services:
       environment: # Note: These should be Docker Secrets in staging and production!
         POSTGRES_USER: user
         POSTGRES_PASSWORD: pass
-        POSTGRES_DB: pensumpartner-dev-db
+        POSTGRES_DB: waterDb
       volumes:
         - devdb:/var/lib/postgresql/data

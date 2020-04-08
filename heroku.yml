@@ -8,6 +8,8 @@ build:
 release:
   command:
     - npm install
+    - npx sequelize-cli init
+    - npx sequelize-cli db:migrate
   image: web
 run:
   web: docker-compose up
