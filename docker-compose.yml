@@ -1,8 +1,25 @@
-version: '3'
+version: '3.7'
 services:
-  db:
-    image: postgres
-    volumes:
-      - ./tmp/db:/var/lib/postgresql/data
-    ports:
-      - "6432:5432"
+  backend:
+    build: .
+      command: npm run dev
+      volumes:
+        - .:/usr/src/app
+      ports:
+        - "3000:3000"
+        - "9229:9229"
+      environment:
+        NODE_ENV: dev
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: pass
+        POSTGRES_DB: pensumpartner-dev-db
+    postgres:
+      image: postgres:11
+      ports:
+        - "35432:5432"
+      environment: # Note: These should be Docker Secrets in staging and production!
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: pass
+        POSTGRES_DB: pensumpartner-dev-db
+      volumes:
+        - devdb:/var/lib/postgresql/data
