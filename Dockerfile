@@ -11,7 +11,7 @@ RUN apt-get update
 
 EXPOSE 5000
 
-CMD [ "npm", "start" ]
+CMD [ "npm", "start" ] 
 
 # Copy the rest of your app's source code from your host to your image filesystem.
 
