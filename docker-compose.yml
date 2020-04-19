@@ -1,25 +1,41 @@
-version: '3.7'
-services:
-  backend:
+version: '3.7' # docker-compose file type
+
+services: # Inside is all the defined containers.
+
+
+  db: # Container
+    image: postgres:11
+    ports:
+      - "54320:5432"
+    container_name: postgres_container
+    environment:
+      POSTGRES_DB: waterMeter
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+    networks:
+      - back
+    volumes:
+      - my_dbdata:/var/lib/postgresql/data
+
+
+  web_app: # Container
     build: .
-      command: npm run dev
-      volumes:
-        - .:/usr/src/app
-      ports:
-        - "3000:3000"
-        - "9229:9229"
-      environment:
-        NODE_ENV: dev
-        POSTGRES_USER: user
-        POSTGRES_PASSWORD: pass
-        POSTGRES_DB: waterDb
-    postgres:
-      image: postgres:11
-      ports:
-        - "35432:5432"
-      environment: # Note: These should be Docker Secrets in staging and production!
-        POSTGRES_USER: user
-        POSTGRES_PASSWORD: pass
-        POSTGRES_DB: waterDb
-      volumes:
-        - devdb:/var/lib/postgresql/data
+    container_name: node_server_container
+    volumes:
+      - .:/usr/app
+    ports:
+      - "8080:8080"
+      - "9229:9229"
+    depends_on:
+      - db
+    restart: always
+    networks:
+      - front
+      - back
+
+networks: # Not really doing anything right now...
+  front:
+  back:
+
+volumes:
+  my_dbdata:

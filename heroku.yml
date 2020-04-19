@@ -13,4 +13,3 @@ release:
   image: web
 run:
   web: docker-compose up
-  web: npm start

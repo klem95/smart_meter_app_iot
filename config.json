@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "user",
+    "password": "pass",
+    "database": "waterMeter",
+    "host": "192.168.99.100",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "user",
+    "password": "pass",
+    "database": "waterMeter",
+    "host": "192.168.99.100",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "user",
+    "password": "pass",
+    "database": "waterMeter",
+    "host": "192.168.99.100",
+    "dialect": "postgres",
+    "operatorsAliases": false
+  }
+}

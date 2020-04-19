@@ -1,18 +1,18 @@
 # Getting base image
-FROM node:10 
+FROM node:latest
 
 # This informs the system which dir all further actions takes place in
-WORKDIR /usr/src/app
+WORKDIR /usr/app
 
+# Copies the local files into the image
+COPY package.json .
+RUN npm install --quiet
+
+# Copy everything from the local folder into the image
 COPY . .
 
-RUN npm install
-RUN apt-get update 
+EXPOSE 8080
 
-EXPOSE 5000
-
-CMD [ "npm", "start" ] 
-
-# Copy the rest of your app's source code from your host to your image filesystem.
-
+# Defines the command that will run in the container when it starts
+CMD [ "npm", "start" ]
 
