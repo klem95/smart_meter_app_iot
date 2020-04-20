@@ -21,6 +21,7 @@ services: # Inside is all the defined containers.
   web_app: # Container
     build: .
     container_name: node_server_container
+    command: npm start
     volumes:
       - .:/usr/app
     ports:
