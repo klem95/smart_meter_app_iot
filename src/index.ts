@@ -11,7 +11,7 @@ let app = express();
 
 app.use('/', async (req:Request,res:Response) : Promise<void> => {
     try {
-        /*
+
         await sequelize.sync()
         const test = new WaterMeter({
             name: "hans",
@@ -21,11 +21,12 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
 
         const all = await WaterMeter.findAll()
 
-         */
 
 
-        res.send("all setup")
+
+        res.send(all)
     }catch (e) {
+        res.send(e.toString())
         throw e
     }
 

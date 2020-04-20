@@ -7,7 +7,7 @@ const config = {
     database: 'waterMeter',
     username: 'user',
     password: 'pass',
-    host: "192.168.99.100",
+    // host: "192.168.99.100",
     storage: ':memory:',
     models: [__dirname + '/models'],
 };
