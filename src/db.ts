@@ -5,13 +5,26 @@ if (process.env.DATABASE_URL!= null) {
     if (url !=null) {
         let split = url.split('/')
         let name = split[split.length-1]
+
+        let port : any = url.match(/\:[0-9]{4}/)
+        port = port[0].substring(1,port[0].length)
+
+        let username : any = url.match(/\/\w*:/)
+        username = username[0].substring(1, username[0].length-1)
+
+        let password : any = url.match(/\:[\w]*@/)
+        password = password[0].substring(1, password[0].length-1)
+
+        let host : any =  url.match(/\@.*:/)
+        host = host[0].substring(1, host[0].length-1)
+
         const configs: SequelizeOptions= {
-            port: Number(url.match(/\/\w*:/) != null ? url.match(/\:[0-9]{4}/) : "0000"),
+            port: port,
             dialect: 'postgres',
             database: name,
-            username: String (url.match(/\/\w*:/) != null ? url.match(/\/\w*:/) : "user"),
-            password:  String (url.match(/\:[\w]*@/) != null ? url.match(/\:[\w]*@/) : "pass"),
-            host: String (url.match(/\@.*:/) != null ? url.match(/\@.*:/) : "pass"),
+            username: username,
+            password: password,
+            host: host,
             storage: ':memory:',
             models: [__dirname + '/models']
         }

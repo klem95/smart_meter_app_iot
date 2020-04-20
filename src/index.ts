@@ -37,12 +37,13 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
 app.listen(port, async () => {
     try {
         console.log(process.env.DATABASE_URL);
-        // let re = test.match(/\/\w*:/); // user
-        // let re = test.match(/\:[\w]*@/); // password
+         //let re = test.match(/\/\w*:/); // user
+         //let re = test.match(/\:[\w]*@/); // password
         //let re = test.match(/\@.*:/); // host
         // let re = test.match(/\:[0-9]{4}/); // port
         //let re = test.split('/')// db name
-       // console.log(re[re.length-1])
+        //if (re != null)
+        //console.log(re[0].substring(1, re[0].length-1));
         console.log(seq)
         await seq.sync()
         console.log(`Server listening on port ${port}`);
