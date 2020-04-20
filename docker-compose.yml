@@ -24,8 +24,8 @@ services: # Inside is all the defined containers.
     volumes:
       - .:/usr/app
     ports:
-      - "8080:8080"
-      - "9229:9229"
+      - "8080:8080" # Mounting container
+      - "9229:9229" # Mounting data for nodemon connection
     depends_on:
       - db
     restart: always

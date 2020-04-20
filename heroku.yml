@@ -12,4 +12,4 @@ release:
     - npx sequelize-cli db:migrate
   image: web
 run:
-  web: docker-compose up
+  web: npm run start
