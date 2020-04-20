@@ -32,8 +32,13 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
 });
 
 app.listen(port, async () => {
-    await seq.sync()
-    console.log(`Server listening on port ${port}`);
-    console.log("hello")
+    try {
+        await seq.sync()
+        console.log(`Server listening on port ${port}`);
+        console.log("hello")
+    } catch (e) {
+        console.log('ERROR!')
+        throw e
+    }
 });
 

@@ -3,6 +3,8 @@ let sequelize
 if (process.env.DATABASE_URL!= null) {
     sequelize = new Sequelize(process.env.DATABASE_URL, {
         logging: false,
+        storage: ':memory:',
+        models: [__dirname + '/models'],
         dialectOptions: {
             ssl: true /* for SSL config since Heroku gives you this out of the box */
         }
