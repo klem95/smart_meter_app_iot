@@ -11,7 +11,7 @@ sequelize.sync()
 
 app.use('/', async (req:Request,res:Response) : Promise<void> => {
     try {
-        await sequelize.sync() // <--- This is the problem!
+        await sequelize.sync()
         const test = new WaterMeter({
             name: "hans",
             birthday: "21"

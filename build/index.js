@@ -20,7 +20,7 @@ let app = express_1.default();
 db_1.sequelize.sync();
 app.use('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield db_1.sequelize.sync(); // <--- This is the problem!
+        yield db_1.sequelize.sync();
         const test = new WaterMeter_1.default({
             name: "hans",
             birthday: "21"
