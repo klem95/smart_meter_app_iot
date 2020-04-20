@@ -26,6 +26,7 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
         res.send(all)
     }catch (e) {
         res.send(e.toString())
+        console.log("im running with error")
         throw e
     }
 
@@ -33,6 +34,10 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
 
 app.listen(port, async () => {
     try {
+        console.log(process.env.DATABASE_URL);
+        console.log(process.env.DATABASE_USER);
+        console.log(process.env.DATABASE_PASSWORD);
+
         await seq.sync()
         console.log(`Server listening on port ${port}`);
         console.log("hello")
