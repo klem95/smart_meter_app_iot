@@ -3,7 +3,7 @@ import WaterMeter from "./models/WaterMeter";
 import { sequelize } from './db'
 import {Response,Request} from "express";
 
-const PORT = 8080;
+const port = process.env.PORT || 3000
 
 let app = express();
 
@@ -28,8 +28,8 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
 
 });
 
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
     console.log("hello")
 });
 
