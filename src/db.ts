@@ -11,4 +11,10 @@ const config: SequelizeOptions = {
     models: [__dirname + '/models'],
 }
 
+if (process.env.HEROKU_POSTGRESQL_COBALT_URL != null) {
+    console.log("HEEEEEELLO")
+    console.log(process.env.HEROKU_POSTGRESQL_COBALT_URL)
+
+}
+
 export const sequelize = new Sequelize(config)
