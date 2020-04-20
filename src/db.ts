@@ -1,7 +1,7 @@
 import {Sequelize, SequelizeOptions} from 'sequelize-typescript'
 let sequelize
-if (process.env.HEROKU_POSTGRESQL_COBALT_URL != null) {
-    sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_COBALT_URL, {
+if (process.env.DATABASE_URL!= null) {
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
         logging: false,
         dialectOptions: {
             ssl: true /* for SSL config since Heroku gives you this out of the box */
