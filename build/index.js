@@ -13,28 +13,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
-const WaterMeter_1 = __importDefault(require("./models/WaterMeter"));
-const db_1 = require("./db");
-const PORT = 8080;
+const port = process.env.PORT || 3000;
 let app = express_1.default();
-db_1.sequelize.sync();
+//sequelize.sync()
 app.use('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield db_1.sequelize.sync();
-        const test = new WaterMeter_1.default({
+        /*
+        await sequelize.sync()
+        const test = new WaterMeter({
             name: "hans",
             birthday: "21"
-        });
-        test.save();
-        const all = yield WaterMeter_1.default.findAll();
-        res.send(all);
+        })
+        test.save()
+
+        const all = await WaterMeter.findAll()
+
+         */
+        res.send("all setup");
     }
     catch (e) {
         throw e;
     }
 }));
-app.listen(PORT, () => {
-    console.log(`Server listening on port ${PORT}`);
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`);
     console.log("hello");
 });
 //# sourceMappingURL=index.js.map

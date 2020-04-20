@@ -11,7 +11,4 @@ RUN npm install
 # Copy everything from the local folder into the image
 COPY . .
 
-EXPOSE 8080
-
-
 

@@ -21,11 +21,11 @@ services: # Inside is all the defined containers.
   web_app: # Container
     build: .
     container_name: node_server_container
-    command: npm start
+    command: npm run develop
     volumes:
       - .:/usr/app
     ports:
-      - "8080:8080" # Mounting container
+      - "3000:3000" # Mounting container
       - "9229:9229" # Mounting data for nodemon connection
     depends_on:
       - db

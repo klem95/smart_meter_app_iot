@@ -7,10 +7,11 @@ const port = process.env.PORT || 3000
 
 let app = express();
 
-sequelize.sync()
+//sequelize.sync()
 
 app.use('/', async (req:Request,res:Response) : Promise<void> => {
     try {
+        /*
         await sequelize.sync()
         const test = new WaterMeter({
             name: "hans",
@@ -20,8 +21,10 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
 
         const all = await WaterMeter.findAll()
 
+         */
 
-        res.send(all)
+
+        res.send("all setup")
     }catch (e) {
         throw e
     }
