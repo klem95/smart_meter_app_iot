@@ -1,10 +1,9 @@
 import express from "express"
 import WaterMeter from "./models/WaterMeter";
-import { sequelize } from './db'
 import {Response,Request} from "express";
+import {seq} from "./db";
 
 const port = process.env.PORT || 3000
-
 let app = express();
 
 //sequelize.sync()
@@ -12,7 +11,7 @@ let app = express();
 app.use('/', async (req:Request,res:Response) : Promise<void> => {
     try {
 
-        await sequelize.sync()
+
         const test = new WaterMeter({
             name: "hans",
             birthday: "21"
@@ -32,7 +31,8 @@ app.use('/', async (req:Request,res:Response) : Promise<void> => {
 
 });
 
-app.listen(port, () => {
+app.listen(port, async () => {
+    await seq.sync()
     console.log(`Server listening on port ${port}`);
     console.log("hello")
 });

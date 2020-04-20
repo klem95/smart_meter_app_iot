@@ -1,20 +1,27 @@
 import {Sequelize, SequelizeOptions} from 'sequelize-typescript'
-
-const config: SequelizeOptions = {
-    port: 54320,
-    dialect: 'postgres',
-    database: 'waterMeter',
-    username: 'user',
-    password: 'pass',
-    //host: "192.168.99.100",
-    storage: ':memory:',
-    models: [__dirname + '/models'],
-}
-
+let sequelize
 if (process.env.HEROKU_POSTGRESQL_COBALT_URL != null) {
-    console.log("HEEEEEELLO")
-    console.log(process.env.HEROKU_POSTGRESQL_COBALT_URL)
+    sequelize = new Sequelize(process.env.HEROKU_POSTGRESQL_COBALT_URL, {
+        logging: false,
+        dialectOptions: {
+            ssl: true /* for SSL config since Heroku gives you this out of the box */
+        }
+    })
+console.log("yo")
+} else {
+    const configs: SequelizeOptions= {
+        port: 54320,
+        dialect: 'postgres',
+        database: 'waterMeter',
+        username: 'user',
+        password: 'pass',
+        host: "192.168.99.100",
+        storage: ':memory:',
+        models: [__dirname + '/models']
+    }
+    sequelize = new Sequelize(configs)
+    console.log("fuck!")
 
 }
 
-export const sequelize = new Sequelize(config)
+export const seq : any = sequelize

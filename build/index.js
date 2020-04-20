@@ -14,22 +14,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const WaterMeter_1 = __importDefault(require("./models/WaterMeter"));
-const db_1 = require("./db");
 const port = process.env.PORT || 3000;
+const configs = require('./db');
 let app = express_1.default();
 //sequelize.sync()
 app.use('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        yield db_1.sequelize.sync();
+        yield configs.sync();
         const test = new WaterMeter_1.default({
             name: "hans",
             birthday: "21"
         });
         test.save();
         const all = yield WaterMeter_1.default.findAll();
-        res.send("all setup");
+        res.send(all);
     }
     catch (e) {
+        res.send(e.toString());
         throw e;
     }
 }));
