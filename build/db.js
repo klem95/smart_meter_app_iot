@@ -23,7 +23,7 @@ if (process.env.DATABASE_URL != null) {
             password: password,
             host: host,
             storage: ':memory:',
-            models: [__dirname + '/models']
+            models: [__dirname + '/model']
         };
         sequelize = new sequelize_typescript_1.Sequelize(configs);
         console.log("yo");
@@ -38,7 +38,7 @@ else {
         password: 'pass',
         host: "192.168.99.100",
         storage: ':memory:',
-        models: [__dirname + '/models']
+        models: [__dirname + '/model']
     };
     sequelize = new sequelize_typescript_1.Sequelize(configs);
     console.log("fuck!");

@@ -1,15 +1,24 @@
 'use strict';
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('waterMeters', {
+    return queryInterface.createTable('Smart-meter-samples', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      sample: {
-        type: Sequelize.STRING
+      meterId: {
+        type: Sequelize.INTEGER
+      },
+      authenticSample: {
+        type: Sequelize.BOOLEAN
+      },
+      date: {
+        type: Sequelize.DATE
+      },
+      wattsPerHour: {
+        type: Sequelize.INTEGER
       },
       createdAt: {
         allowNull: false,
@@ -22,6 +31,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('waterMeters');
+    return queryInterface.dropTable('Smart-meter-samples');
   }
 };
