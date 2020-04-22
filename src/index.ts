@@ -8,6 +8,7 @@ import mainRouter from "./routes";
 
 const mqttClient = require('./mqtt') // Subscribing to message broker
 
+
 //const router = require('./routes')
 const port = process.env.PORT || 3000
 const app = express()
@@ -21,6 +22,7 @@ app.listen(port, async () : Promise<void> =>  {
     }
 });
 
+app.use(express.json())
 app.use(mainRouter)
 
 //const test = "postgres://hupjaeyicqwihd:5b9c69ae13bb8bf3f8fb4af620fdc42ce74257872ec4a9336a0e43dfe5fc83e4@ec2-79-125-26-232.eu-west-1.compute.amazonaws.com:5432/d6dti5957svigc"
