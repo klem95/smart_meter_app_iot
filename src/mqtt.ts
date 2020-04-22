@@ -1,5 +1,7 @@
+import {decodePackage} from './utils/decoder'
+import SmartMeterSample from "./model/Smart-meter-sample";
 const mqtt = require('mqtt')
-const decode = require('./decoder')
+
 
 const brokeUrl = "mqtts://influx.itu.dk"
 const options = {
@@ -23,14 +25,18 @@ client.on("error", function (error:Error) {
 })
 
 client.on('message',function(topic:string, message:Buffer, packet:any){
-    const decodedMessage = decode.decodePackage(message)
-    console.log(decodedMessage)
-
+    const decodedMessage  = decodePackage(message)
+    if (decodedMessage.authenticSample){
+        const smartMeterSample = new SmartMeterSample({
+            meterId:decodedMessage.meterId,
+            authenticSample:decodedMessage.authenticSample,
+            date: decodedMessage.date,
+            wattsPerHour:decodedMessage.wattsPerHour
+        })
+        smartMeterSample.save()
+    }
 });
 
 client.subscribe(topic);
-
-
-
 
 export default client
