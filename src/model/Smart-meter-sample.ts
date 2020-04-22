@@ -3,7 +3,7 @@ import {Model, Column, Table, BelongsToMany, Scopes, CreatedAt, UpdatedAt} from 
 
 
 @Table
-export default class smartMeterSample extends Model<smartMeterSample> {
+export default class SmartMeterSample extends Model<SmartMeterSample> {
 
     @Column
     meterId!: number
