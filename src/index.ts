@@ -1,20 +1,19 @@
 import express from "express"
 import sequelize from "./db";
-import client from "./mqtt";
 import mainRouter from "./routes";
 
 //import WaterMeter from "./model/WaterMeter";
 //import {Response,Request} from "express";
 
 
-//const mqttClient = require('./mqtt') // Subscribing to message broker
+const mqttClient = require('./mqtt') // Subscribing to message broker
+
 //const router = require('./routes')
 const port = process.env.PORT || 3000
 const app = express()
 app.listen(port, async () : Promise<void> =>  {
     try {
         await sequelize.sync()
-        await client
         console.log(`Server listening on port ${port}`);
     } catch (e) {
         console.log('ERROR! Crashed at startup..')
