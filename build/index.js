@@ -14,18 +14,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const db_1 = __importDefault(require("./db"));
-const mqtt_1 = __importDefault(require("./mqtt"));
 const routes_1 = __importDefault(require("./routes"));
 //import WaterMeter from "./model/WaterMeter";
 //import {Response,Request} from "express";
-//const mqttClient = require('./mqtt') // Subscribing to message broker
+const mqttClient = require('./mqtt'); // Subscribing to message broker
 //const router = require('./routes')
 const port = process.env.PORT || 3000;
 const app = express_1.default();
 app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield db_1.default.sync();
-        yield mqtt_1.default;
         console.log(`Server listening on port ${port}`);
     }
     catch (e) {
@@ -33,6 +31,7 @@ app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
         throw e;
     }
 }));
+app.use(express_1.default.json());
 app.use(routes_1.default);
 //const test = "postgres://hupjaeyicqwihd:5b9c69ae13bb8bf3f8fb4af620fdc42ce74257872ec4a9336a0e43dfe5fc83e4@ec2-79-125-26-232.eu-west-1.compute.amazonaws.com:5432/d6dti5957svigc"
 //seq.sync()

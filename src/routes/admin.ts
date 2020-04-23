@@ -4,6 +4,8 @@ import * as adminValidators from '../validators/admin'
 
 const adminRouter = Router()
 
-adminRouter.post('/get-sm-data',adminValidators.returnSmData, admin.returnSmData)
+adminRouter.get('/avg-wh/:id',adminValidators.avgWH, admin.avgWH)
+adminRouter.post('/return-samples',adminValidators.ReturnSamples, admin.ReturnSamples)
+
 
 export default adminRouter

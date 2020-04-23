@@ -1,6 +1,9 @@
 import {Model, Column, Table, BelongsToMany, Scopes, CreatedAt, UpdatedAt} from "sequelize-typescript";
+import {Op} from 'sequelize'
 
+@Scopes(() => ({
 
+}))
 
 @Table
 export default class SmartMeterSample extends Model<SmartMeterSample> {
