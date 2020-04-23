@@ -4,7 +4,9 @@ import * as adminValidators from '../validators/admin'
 
 const adminRouter = Router()
 
-adminRouter.get('/avg-wh/:id',adminValidators.avgWH, admin.avgWH)
+adminRouter.get('/crone-ping', admin.cronePing)
+
+adminRouter.get('/avg-spending/:id',adminValidators.avgSpending, admin.avgSpending)
 adminRouter.post('/return-samples',adminValidators.ReturnSamples, admin.ReturnSamples)
 
 

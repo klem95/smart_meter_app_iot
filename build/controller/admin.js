@@ -11,17 +11,30 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const Smart_meter_sample_1 = __importDefault(require("../model/Smart-meter-sample"));
-const { Op } = require('sequelize');
-exports.returnSmData = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+const sequelize_1 = __importStar(require("sequelize"));
+exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const valError = express_validator_1.validationResult(req);
         if (valError.isEmpty()) {
-            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { date: { [Op.between]: [req.body.startDate, req.body.startEnd] } } });
-            console.log(smartMeterSamples);
-            res.status(200).json({ success: true, message: 'gj m8' });
+            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: req.body.meterId, date: { [sequelize_1.Op.between]: [req.body.startDate, req.body.endDate] } } });
+            if (smartMeterSamples.length != 0) {
+                res.status(200).json({ success: true, message: smartMeterSamples });
+            }
+            else {
+                const smsStart = yield Smart_meter_sample_1.default.findOne({ attributes: [[sequelize_1.default.fn('min', sequelize_1.default.col('date')), 'min']] });
+                const smsEnd = yield Smart_meter_sample_1.default.findOne({ attributes: [[sequelize_1.default.fn('max', sequelize_1.default.col('date')), 'max']] });
+                res.status(400).json({ err: 'no samples found within the provided date range', samplePeriod: { first: smsStart, last: smsEnd } });
+            }
         }
         else {
             res.status(400).json({ err: valError });
@@ -29,6 +42,28 @@ exports.returnSmData = (req, res, next) => __awaiter(void 0, void 0, void 0, fun
     }
     catch (e) {
         next(new Error('Error! Could not return sample data'));
+    }
+});
+exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const valError = express_validator_1.validationResult(req);
+        if (valError.isEmpty()) {
+            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: req.params.id } });
+            let totalWh = 0;
+            let avgKWhPrice = 2.25;
+            smartMeterSamples.forEach(val => {
+                totalWh += val.wattsPerHour;
+            });
+            avgKWhPrice = (totalWh / 1000) * avgKWhPrice;
+            const avgWh = totalWh / smartMeterSamples.length;
+            res.status(200).json({ success: true, avgWh: avgWh, });
+        }
+        else {
+            res.status(400).json({ err: valError });
+        }
+    }
+    catch (e) {
+        next(new Error('Error! Could not return ranking'));
     }
 });
 //# sourceMappingURL=admin.js.map

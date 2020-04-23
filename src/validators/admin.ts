@@ -28,7 +28,7 @@ export const ReturnSamples = checkSchema({
     }
 })
 
-export const avgWH = checkSchema({
+export const avgSpending = checkSchema({
     id: {
         in: ['params'],
         isInt: true,
