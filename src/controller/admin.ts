@@ -12,8 +12,8 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
     try {
         const valError = validationResult(req)
         if (valError.isEmpty()){
-            const startDate : any = new Date(req.query.startDate)
-            const endDate : any = new Date(req.query.endDate)
+            const startDate : any = new Date(req.query.startDate.toString())
+            const endDate : any = new Date(req.query.endDate.toString())
 
             console.log(req.query)
             console.log(startDate)
