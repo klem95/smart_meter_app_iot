@@ -15,10 +15,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const Smart_meter_sample_1 = __importDefault(require("../model/Smart-meter-sample"));
 exports.ReturnSamples = express_validator_1.checkSchema({
-    meterId: {
-        in: ['query'],
+    id: {
+        in: ['params'],
         isInt: true,
-        errorMessage: "meterId needs to be of type int",
+        errorMessage: "meterId needs to be of type int.",
         custom: {
             options: (val) => __awaiter(void 0, void 0, void 0, function* () {
                 if ((yield Smart_meter_sample_1.default.count({ where: { meterId: val } })) === 0)

@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {validationResult} from "express-validator";
 import SmartMeterSample from "../model/Smart-meter-sample";
 import sequelize, {Op} from 'sequelize'
+import querystring from 'querystring';
 
 export const cronePing = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     res.status(200).json({success: true})
@@ -11,10 +12,14 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
     try {
         const valError = validationResult(req)
         if (valError.isEmpty()){
-            const startDate : Date = new Date(req.query.startDate)
-            const endDate : Date = new Date(req.query.endDate)
+            const startDate : any = new Date(req.query.startDate)
+            const endDate : any = new Date(req.query.endDate)
 
-            const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: req.params.id, date:{[Op.between]: [startDate.toDateString(), endDate.toDateString()]}}})
+            console.log(req.query)
+            console.log(startDate)
+            console.log(endDate)
+
+            const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: req.params.id, date:{ [Op.between]: [startDate, endDate]  } }})
             if (smartMeterSamples.length != 0){
                 res.status(200).json({success: true, result: {smartMeterSamples}})
             } else {
