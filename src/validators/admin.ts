@@ -5,7 +5,7 @@ export const ReturnSamples = checkSchema({
     id: {
         in: ['params'],
         isInt: true,
-        errorMessage: "meterId needs to be of type int",
+        errorMessage: "meterId needs to be of type int.",
         custom: {
             options: async val => {
                 if (await SmartMeterSample.count({where:{meterId: val}}) === 0)
