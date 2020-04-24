@@ -11,7 +11,7 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
     try {
         const valError = validationResult(req)
         if (valError.isEmpty()){
-            const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: req.body.meterId, date:{[Op.between]: [req.body.startDate, req.body.endDate]}}})
+            const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: req.params.id, date:{[Op.between]: [req.query.startDate, req.query.endDate]}}})
             if (smartMeterSamples.length != 0){
                 res.status(200).json({success: true, result: {smartMeterSamples}})
             } else {

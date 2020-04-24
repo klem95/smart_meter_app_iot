@@ -16,7 +16,7 @@ const express_validator_1 = require("express-validator");
 const Smart_meter_sample_1 = __importDefault(require("../model/Smart-meter-sample"));
 exports.ReturnSamples = express_validator_1.checkSchema({
     meterId: {
-        in: ['body'],
+        in: ['query'],
         isInt: true,
         errorMessage: "meterId needs to be of type int",
         custom: {
@@ -28,12 +28,12 @@ exports.ReturnSamples = express_validator_1.checkSchema({
         }
     },
     startDate: {
-        in: ['body'],
+        in: ['query'],
         isISO8601: true,
         errorMessage: "startDate needs to be of type date: yyyy-mm-dd",
     },
     endDate: {
-        in: ['body'],
+        in: ['query'],
         isISO8601: true,
         errorMessage: "endDate needs to be of type date: yyyy-mm-dd"
     }

@@ -2,8 +2,8 @@ import {checkSchema} from 'express-validator'
 import SmartMeterSample from "../model/Smart-meter-sample";
 
 export const ReturnSamples = checkSchema({
-    meterId: {
-        in: ['body'],
+    id: {
+        in: ['params'],
         isInt: true,
         errorMessage: "meterId needs to be of type int",
         custom: {
@@ -16,13 +16,13 @@ export const ReturnSamples = checkSchema({
     },
 
     startDate: {
-        in: ['body'],
+        in: ['query'],
         isISO8601: true,
         errorMessage: "startDate needs to be of type date: yyyy-mm-dd",
     },
 
     endDate: {
-        in: ['body'],
+        in: ['query'],
         isISO8601: true,
         errorMessage: "endDate needs to be of type date: yyyy-mm-dd"
     }

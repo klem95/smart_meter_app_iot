@@ -22,13 +22,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const Smart_meter_sample_1 = __importDefault(require("../model/Smart-meter-sample"));
 const sequelize_1 = __importStar(require("sequelize"));
+exports.cronePing = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    res.status(200).json({ success: true });
+});
 exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const valError = express_validator_1.validationResult(req);
         if (valError.isEmpty()) {
-            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: req.body.meterId, date: { [sequelize_1.Op.between]: [req.body.startDate, req.body.endDate] } } });
+            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: req.query.meterId, date: { [sequelize_1.Op.between]: [req.query.startDate, req.query.endDate] } } });
             if (smartMeterSamples.length != 0) {
-                res.status(200).json({ success: true, message: smartMeterSamples });
+                res.status(200).json({ success: true, result: { smartMeterSamples } });
             }
             else {
                 const smsStart = yield Smart_meter_sample_1.default.findOne({ attributes: [[sequelize_1.default.fn('min', sequelize_1.default.col('date')), 'min']] });
@@ -56,7 +59,7 @@ exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             });
             avgKWhPrice = (totalWh / 1000) * avgKWhPrice;
             const avgWh = totalWh / smartMeterSamples.length;
-            res.status(200).json({ success: true, avgWh: avgWh, });
+            res.status(200).json({ success: true, result: { avgWh: avgWh, avgSpending: avgKWhPrice } });
         }
         else {
             res.status(400).json({ err: valError });
