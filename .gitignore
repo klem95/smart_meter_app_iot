@@ -110,5 +110,4 @@ temp/
 
 utils/db-configs.js
 
-jwtConfig.ts
 # End of https://www.gitignore.io/api/node
