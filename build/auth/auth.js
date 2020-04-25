@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
+const User_1 = __importDefault(require("../model/User"));
 const bcrypt = require('bcrypt');
 const localStrategy = require('passport-local').Strategy;
 passport_1.default.use('signup', new localStrategy({
@@ -28,5 +29,12 @@ passport_1.default.use('signup', new localStrategy({
     catch (e) {
         done(e);
     }
+})));
+passport_1.default.use('login', new localStrategy({
+    usernameField: 'email',
+    passwordField: 'password',
+}, (role, email, password, done) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(role);
+    const dbUser = yield User_1.default.findOne({ where: { email: email } });
 })));
 //# sourceMappingURL=auth.js.map

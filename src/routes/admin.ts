@@ -1,6 +1,7 @@
 import {Router} from 'express'
 import * as admin from '../controller/admin'
 import * as adminValidators from '../validators/admin'
+import passport from 'passport'
 
 const adminRouter = Router()
 
