@@ -7,10 +7,12 @@ const express_1 = require("express");
 const admin_1 = __importDefault(require("./admin"));
 const user_1 = __importDefault(require("./user"));
 const electricity_supplier_1 = __importDefault(require("./electricity-supplier"));
+const user_interface_1 = __importDefault(require("./user-interface"));
 const mainRouter = express_1.Router();
 mainRouter.use('/admin', admin_1.default); // Mounts the route as middleware
 mainRouter.use('/user', user_1.default);
 mainRouter.use('/electricitySupplier', electricity_supplier_1.default);
+mainRouter.use('/user-interface', user_interface_1.default);
 mainRouter.get('/*', (req, res) => {
     res.status(404).send('404. This endpoint does not exist');
 });

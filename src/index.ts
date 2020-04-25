@@ -1,6 +1,8 @@
 import express from "express"
 import sequelize from "./db";
 import mainRouter from "./routes";
+import bodyParser from 'body-parser'
+import passport from "passport";
 
 //import WaterMeter from "./model/WaterMeter";
 //import {Response,Request} from "express";
@@ -22,6 +24,8 @@ app.listen(port, async () : Promise<void> =>  {
     }
 });
 
+app.use(bodyParser.urlencoded({extended:true}))
+app.use(passport.initialize())
 app.use(express.json())
 app.use(mainRouter)
 

@@ -22,7 +22,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const Smart_meter_sample_1 = __importDefault(require("../model/Smart-meter-sample"));
 const sequelize_1 = __importStar(require("sequelize"));
-const querystring_1 = __importDefault(require("querystring"));
 exports.cronePing = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({ success: true });
 });
@@ -30,10 +29,12 @@ exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const valError = express_validator_1.validationResult(req);
         if (valError.isEmpty()) {
-            const qs = querystring_1.default.parse(req.query);
-            const startDate = new Date(req.query.endDate);
-            const endDate = new Date(req.query.endDate);
-            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: req.params.id, date: { [sequelize_1.Op.between]: [startDate.toDateString(), endDate.toDateString()] } } });
+            const startDate = new Date(req.query.startDate.toString());
+            const endDate = new Date(req.query.endDate.toString());
+            console.log(req.query);
+            console.log(startDate);
+            console.log(endDate);
+            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: req.params.id, date: { [sequelize_1.Op.between]: [startDate, endDate] } } });
             if (smartMeterSamples.length != 0) {
                 res.status(200).json({ success: true, result: { smartMeterSamples } });
             }
