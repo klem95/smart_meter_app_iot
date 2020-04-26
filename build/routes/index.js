@@ -11,7 +11,8 @@ const user_interface_1 = __importDefault(require("./user-interface"));
 const passport_1 = __importDefault(require("passport"));
 const roleAdmin_1 = require("../utils/roleAdmin");
 const mainRouter = express_1.Router();
-mainRouter.use('/admin', passport_1.default.authenticate('jwt', { session: false }), roleAdmin_1.adminCheck, admin_1.default); // Mounts the route as middleware
+//mainRouter.use('/admin',passport.authenticate('jwt', { session : false }),adminCheck, adminRouter) // Mounts the route as middleware
+mainRouter.use('/admin', admin_1.default); // Mounts the route as middleware
 mainRouter.use('/user', user_1.default);
 mainRouter.use('/electricitySupplier', passport_1.default.authenticate('jwt', { session: false }), roleAdmin_1.electricitySupplierCheck, electricity_supplier_1.default);
 mainRouter.use('/user-interface', user_interface_1.default);
