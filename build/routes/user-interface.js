@@ -16,6 +16,9 @@ const userInterface = __importStar(require("../controller/user-interface"));
 const userInterfaceVal = __importStar(require("../validators/user-interface"));
 require('../auth/auth');
 const userInterfaceRouter = express_1.Router();
+const jwt = require('jsonwebtoken');
 userInterfaceRouter.post('/sign-up', userInterfaceVal.signUp, passport_1.default.authenticate('signup', { session: false }), userInterface.signUp);
+userInterfaceRouter.post('/admin-login', userInterface.login);
+userInterfaceRouter.post('/es-login', userInterface.login);
 exports.default = userInterfaceRouter;
 //# sourceMappingURL=user-interface.js.map
