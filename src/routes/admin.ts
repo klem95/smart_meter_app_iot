@@ -5,8 +5,6 @@ import passport from 'passport'
 
 const adminRouter = Router()
 
-adminRouter.get('/crone-ping', admin.cronePing)
-
 adminRouter.get('/avg-spending/:id',adminValidators.avgSpending, admin.avgSpending)
 adminRouter.get('/return-samples/:id',adminValidators.ReturnSamples, admin.ReturnSamples)
 
