@@ -1,5 +1,6 @@
 import {checkSchema} from 'express-validator'
 import SmartMeterSample from "../model/Smart-meter-sample";
+import User from "../model/User";
 
 export const ReturnSamples = checkSchema({
     id: {
@@ -8,10 +9,10 @@ export const ReturnSamples = checkSchema({
         errorMessage: "meterId needs to be of type int.",
         custom: {
             options: async val => {
-                if (await SmartMeterSample.count({where:{meterId: val}}) === 0)
+                if (await User.count({where:{id: val}}) === 0)
                 return Promise.reject()
             },
-            errorMessage: 'The provided id does not match any meter'
+            errorMessage: 'The provided id does not match any user'
         }
     },
 

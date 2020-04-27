@@ -8,8 +8,8 @@ import {adminCheck,electricitySupplierCheck} from "../utils/roleAdmin";
 
 const mainRouter = Router()
 
-//mainRouter.use('/admin',passport.authenticate('jwt', { session : false }),adminCheck, adminRouter) // Mounts the route as middleware
-mainRouter.use('/admin', adminRouter) // Mounts the route as middleware
+mainRouter.use('/admin',passport.authenticate('jwt', { session : false }),adminCheck, adminRouter) // Mounts the route as middleware
+//mainRouter.use('/admin', adminRouter) // Mounts the route as middleware
 
 mainRouter.use('/user', userRouter)
 mainRouter.use('/electricitySupplier',passport.authenticate('jwt', { session : false }),electricitySupplierCheck, electricitySupplierRouter)

@@ -44,7 +44,7 @@ passport.use('admin-login', new localStrategy({
     }
 ))
 
-passport.use('electrical supplier-login', new localStrategy({
+passport.use('electricity supplier-login', new localStrategy({
         usernameField : 'email',
         passwordField : 'password'
     }, async  (email:string, password:string, done:any) => {
