@@ -16,6 +16,14 @@ let User = class User extends sequelize_typescript_1.Model {
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
+], User.prototype, "firstName", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], User.prototype, "lastName", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
 ], User.prototype, "email", void 0);
 __decorate([
     sequelize_typescript_1.Column,

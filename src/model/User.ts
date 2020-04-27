@@ -1,8 +1,15 @@
-import {Model,Table, Column} from "sequelize-typescript"
+import {ForeignKey,BelongsTo,Model,Table, Column} from "sequelize-typescript"
 import {roleType} from '../utils/enums'
+import Admin from "./Admin";
 
 @Table
 export default class User extends Model<User>{
+
+    @Column
+    firstName!: string
+
+    @Column
+    lastName!: string
 
     @Column
     email!: string
@@ -10,7 +17,14 @@ export default class User extends Model<User>{
     @Column
     password!: string
 
-    @Column(roleType)
-    role!: string
+    @Column
+    meterId!: number
+
+    @ForeignKey(() => Admin)
+    @Column
+    adminId?: number
+
+    @BelongsTo(() => Admin)
+    admin?: Admin
 
 }

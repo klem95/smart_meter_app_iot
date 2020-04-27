@@ -12,8 +12,7 @@ const jwt = require('jsonwebtoken');
 userInterfaceRouter.get('/crone-ping', admin.cronePing)
 
 userInterfaceRouter.post('/sign-up',userInterfaceVal.signUp,passport.authenticate('signup', {session: false}),userInterface.signUp)
-userInterfaceRouter.post('/admin-login', userInterface.login)
-userInterfaceRouter.post('/es-login', userInterface.login)
+userInterfaceRouter.post('/login', userInterface.login)
 
 
 export default userInterfaceRouter

@@ -9,7 +9,7 @@ import passport from "passport";
 
 
 const mqttClient = require('./mqtt') // Subscribing to message broker
-
+const cors = require('cors')
 
 //const router = require('./routes')
 const port = process.env.PORT || 3000
@@ -24,6 +24,7 @@ app.listen(port, async () : Promise<void> =>  {
     }
 });
 
+app.use(cors())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(passport.initialize())
 app.use(express.json())

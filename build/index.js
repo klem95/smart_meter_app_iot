@@ -20,6 +20,7 @@ const passport_1 = __importDefault(require("passport"));
 //import WaterMeter from "./model/WaterMeter";
 //import {Response,Request} from "express";
 const mqttClient = require('./mqtt'); // Subscribing to message broker
+const cors = require('cors');
 //const router = require('./routes')
 const port = process.env.PORT || 3000;
 const app = express_1.default();
@@ -33,6 +34,7 @@ app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
         throw e;
     }
 }));
+app.use(cors());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(passport_1.default.initialize());
 app.use(express_1.default.json());

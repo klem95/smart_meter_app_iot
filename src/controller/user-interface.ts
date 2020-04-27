@@ -3,29 +3,47 @@ import passport from 'passport'
 import User from "../model/User";
 import {validationResult} from "express-validator"
 import {jwtSecret} from '../jwtConfig'
+import Admin from "../model/Admin";
+import ElectricitySupplier from "../model/ElectricitySupplier";
+
 
 const jwt = require('jsonwebtoken')
 require('../auth/auth')
 
+// TEMP SOLUTION... BAD.....
 export const signUp = async (req:Request, res: Response, next:NextFunction) : Promise<void> => {
     try{
         const valError = validationResult(req)
         if(valError.isEmpty() && req.user != null) {
             const userObj = Object.values(req.user)
             const email = userObj[0]
-            const dbObj = await User.findOne({where:{email:email, role: req.body.role}})
-            if(dbObj == null){
-                const newUser = new User({email: email, password: userObj[1], role:req.body.role})
+
+            if(req.body.role == 'user') {
+                const newUser = new User({firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: userObj[1],  adminId: req.body.adminId, meterId: req.body.meterId})
+                newUser.save()
+                if (newUser){
+                    res.status(200).json({
+                        message: 'Signup successful',
+                        user: newUser
+                    })
+                }
+
+            } else if (req.body.role == 'admin') {
+                const newUser = new Admin({firstName: req.body.firstName, lastName: req.body.lastName,email: email, password: userObj[1]})
                 newUser.save()
                 res.status(200).json({
                     message: 'Signup successful',
                     user: newUser
                 })
-            } else {
+            } else if (req.body.role == 'electricity supplier') {
+                const newUser = new ElectricitySupplier({firstName: req.body.firstName, lastName: req.body.lastName,email: email, password: userObj[1]})
+                newUser.save()
                 res.status(200).json({
-                    message: 'User already exist'
+                    message: 'Signup successful',
+                    user: newUser
                 })
             }
+
         } else {
             res.status(400).json({ err: valError})
         }

@@ -2,6 +2,8 @@ import passport from "passport";
 import User from '../model/User'
 import {Strategy} from 'passport-jwt'
 import {jwtSecret} from '../jwtConfig'
+import Admin from "../model/Admin";
+import ElectricitySupplier from "../model/ElectricitySupplier";
 
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
@@ -27,7 +29,7 @@ passport.use('admin-login', new localStrategy({
     passwordField : 'password'
 }, async  (email:string, password:string, done:any) => {
     try{
-        const adminUser = await User.findOne({where:{role: 'admin', email: email}})
+        const adminUser = await Admin.findOne({where:{ email: email}})
         if(!adminUser)
             return done(null, false, { message : 'Email or password was incorrect'})
         const validPass = await bcrypt.compare(password, adminUser.password);
@@ -42,21 +44,39 @@ passport.use('admin-login', new localStrategy({
     }
 ))
 
-passport.use('es-login', new localStrategy({
+passport.use('electrical supplier-login', new localStrategy({
         usernameField : 'email',
         passwordField : 'password'
     }, async  (email:string, password:string, done:any) => {
     try{
-        const adminUser = await User.findOne({where:{role: 'electricity supplier', email: email}})
-        if(!adminUser)
+        const esUser = await ElectricitySupplier.findOne({where:{ email: email}})
+        if(!esUser)
             return done(null, false, { message : 'Email or password was incorrect'})
-        const validPass = await bcrypt.compare(password, adminUser.password);
+        const validPass = await bcrypt.compare(password, esUser.password);
         if (!validPass)
             return done(null, false, { message : 'Email or password was incorrect'})
-        return done(null, adminUser, { message : 'Logged in Successfully'});
+        return done(null, esUser, { message : 'Logged in Successfully'});
     }catch (e) {
         done(e)
     }
+    }
+))
+
+passport.use('user-login', new localStrategy({
+        usernameField : 'email',
+        passwordField : 'password'
+    }, async  (email:string, password:string, done:any) => {
+        try{
+            const user = await User.findOne({where:{ email: email}})
+            if(!user)
+                return done(null, false, { message : 'Email or password was incorrect'})
+            const validPass = await bcrypt.compare(password, user.password);
+            if (!validPass)
+                return done(null, false, { message : 'Email or password was incorrect'})
+            return done(null, user, { message : 'Logged in Successfully'});
+        }catch (e) {
+            done(e)
+        }
     }
 ))
 
