@@ -33,11 +33,11 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
         const valError = validationResult(req)
         if (valError.isEmpty()){
             console.log(req.body)
-            const user = await User.findOne({where:{meterId: req.params.id, adminId: req.body.id}})
+            const user = await User.findOne({where:{id: req.params.id, adminId: req.body.id}})
             if (user){
                 const startDate : any = new Date(req.query.startDate.toString())
                 const endDate : any = new Date(req.query.endDate.toString())
-                const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.id, date:{ [Op.between]: [startDate, endDate]} }})
+                const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
                 if (smartMeterSamples.length != 0){
                     res.status(200).json({success: true, result: {smartMeterSamples}})
                 } else {
