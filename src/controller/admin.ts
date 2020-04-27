@@ -46,7 +46,7 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
                     res.status(400).json({ err: 'no samples found within the provided date range', samplePeriod: {first: smsStart, last: smsEnd}})
                 }
             } else {
-                res.status(400).json({ err: 'no device with the given id belongs to this admin profile'})
+                res.status(400).json({ err: 'no user with the given id belongs to this admin profile'})
 
             }
 

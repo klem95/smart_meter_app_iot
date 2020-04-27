@@ -66,11 +66,11 @@ export const login = async (req:Request, res:Response, next:NextFunction) : Prom
                 } else {
                     req.login(user, { session : false }, async (error) => {
                         if(error) {
-
-                            return next(error)
+                            res.status(400).json({ message: error})
                         } else {
                             const body = { id : user.id, email : user.email, role: user.role }
                             const token = await jwt.sign({ user : body },jwtSecret)
+
                             return res.status(200).json({token: token, user: user })
                         }
                     })

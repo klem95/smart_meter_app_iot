@@ -4,11 +4,14 @@ import {Strategy} from 'passport-jwt'
 import {jwtSecret} from '../jwtConfig'
 import Admin from "../model/Admin";
 import ElectricitySupplier from "../model/ElectricitySupplier";
+import {userInterfaceTypes} from "../utils/enums";
+
 
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 const bcrypt = require('bcrypt')
 const localStrategy = require('passport-local').Strategy;
+
 
 passport.use('signup', new localStrategy({
     usernameField: 'email',
@@ -24,7 +27,7 @@ passport.use('signup', new localStrategy({
     }
 }))
 
-passport.use('admin-login', new localStrategy({
+passport.use(userInterfaceTypes.ADMIN+'-login', new localStrategy({
     usernameField : 'email',
     passwordField : 'password'
 }, async  (email:string, password:string, done:any) => {
@@ -51,7 +54,7 @@ passport.use('admin-login', new localStrategy({
     }
 ))
 
-passport.use('electricity supplier-login', new localStrategy({
+passport.use(userInterfaceTypes.SUPPLIER+'-login', new localStrategy({
         usernameField : 'email',
         passwordField : 'password'
     }, async  (email:string, password:string, done:any) => {
@@ -69,7 +72,7 @@ passport.use('electricity supplier-login', new localStrategy({
     }
 ))
 
-passport.use('user-login', new localStrategy({
+passport.use(userInterfaceTypes.CUSTOMER+'-login', new localStrategy({
         usernameField : 'email',
         passwordField : 'password'
     }, async  (email:string, password:string, done:any) => {
