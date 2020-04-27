@@ -30,12 +30,19 @@ passport.use('admin-login', new localStrategy({
 }, async  (email:string, password:string, done:any) => {
     try{
         const adminUser = await Admin.findOne({where:{ email: email}})
-        if(!adminUser)
+        if(!adminUser){
             return done(null, false, { message : 'Email or password was incorrect'})
+            console.log("Email or password was incorrect")
+        }
+
         const validPass = await bcrypt.compare(password, adminUser.password);
-        if (!validPass)
+        if (!validPass) {
+            console.log("Email or password was incorrect")
             return done(null, false, { message : 'Email or password was incorrect'})
+        }
+
         return done(null, adminUser, { message : 'Logged in Successfully'});
+
     }catch (e) {
         done(e)
     }

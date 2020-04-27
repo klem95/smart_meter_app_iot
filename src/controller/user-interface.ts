@@ -55,20 +55,26 @@ export const signUp = async (req:Request, res: Response, next:NextFunction) : Pr
     }
 }
 
+
 export const login = async (req:Request, res:Response, next:NextFunction) : Promise<void> =>{
     try{
         passport.authenticate(req.body.signAs +'-login', async (err, user, info) => {
+
             try {
                 if(err || !user){
-                    res.status(400).json({success: false, message: "No existing user matches the provided parameters"});
+                    res.status(400).json({ message: "No user was found"})
+                } else {
+                    req.login(user, { session : false }, async (error) => {
+                        if(error) {
+
+                            return next(error)
+                        } else {
+                            const body = { id : user.id, email : user.email, role: user.role }
+                            const token = await jwt.sign({ user : body },jwtSecret)
+                            return res.status(200).json({token: token, user: user })
+                        }
+                    })
                 }
-                req.login(user, { session : false }, async (error) => {
-                    if(error)
-                        return next(error)
-                    const body = { id : user.id, email : user.email, role: user.role }
-                    const token = jwt.sign({ user : body },jwtSecret)
-                    return res.status(200).json({ token })
-                })
             } catch (error) {
                 return next(error)
             }
