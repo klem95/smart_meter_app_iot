@@ -1,10 +1,10 @@
 import {NextFunction, Request, Response} from "express";
 import passport from 'passport'
-import User from "../model/User";
+import User from "../models/User";
 import {validationResult} from "express-validator"
 import {jwtSecret} from '../jwtConfig'
-import Admin from "../model/Admin";
-import ElectricitySupplier from "../model/ElectricitySupplier";
+import Admin from "../models/Admin";
+import ElectricitySupplier from "../models/ElectricitySupplier";
 
 
 const jwt = require('jsonwebtoken')

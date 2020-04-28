@@ -1,8 +1,8 @@
-import {checkSchema} from 'express-validator'
-import User from "../models/User";
-import {roleArr} from '../utils/enums'
-
-export const signUp = checkSchema({
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_validator_1 = require("express-validator");
+const enums_1 = require("../utils/enums");
+exports.signUp = express_validator_1.checkSchema({
     email: {
         in: ["body"],
         isEmail: true,
@@ -16,12 +16,11 @@ export const signUp = checkSchema({
         },
         errorMessage: "password needs to be of type string, and be between 5-25 char"
     },
-    role:{
-        in:["body"],
+    role: {
+        in: ["body"],
         isIn: {
-            options: [roleArr],
+            options: [enums_1.roleArr],
         },
-        errorMessage: "role needs to be one of the following: " + roleArr
+        errorMessage: "role needs to be one of the following: " + enums_1.roleArr
     }
-
-})
+});

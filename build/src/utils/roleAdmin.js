@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const Admin_1 = __importDefault(require("../models/Admin"));
+const Admin_1 = __importDefault(require("../model/Admin"));
 exports.adminCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.user != null) {
         const userObj = Object.values(req.user);
@@ -41,4 +41,3 @@ exports.electricitySupplierCheck = (req, res, next) => __awaiter(void 0, void 0,
         }
     }
 });
-//# sourceMappingURL=roleAdmin.js.map

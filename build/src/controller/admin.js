@@ -20,9 +20,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
-const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
+const Smart_meter_sample_1 = __importDefault(require("../model/Smart-meter-sample"));
 const sequelize_1 = __importStar(require("sequelize"));
-const User_1 = __importDefault(require("../models/User"));
+const User_1 = __importDefault(require("../model/User"));
 exports.cronePing = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({ success: true });
 });
@@ -99,4 +99,3 @@ exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         next(new Error('Error! Could not return ranking'));
     }
 });
-//# sourceMappingURL=admin.js.map

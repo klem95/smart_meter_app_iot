@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const decoder_1 = require("./utils/decoder");
-const Smart_meter_sample_1 = __importDefault(require("./models/Smart-meter-sample"));
+const Smart_meter_sample_1 = __importDefault(require("./model/Smart-meter-sample"));
 const mqtt = require('mqtt');
 const brokeUrl = "mqtts://influx.itu.dk";
 const options = {
@@ -37,4 +37,3 @@ client.on('message', function (topic, message, packet) {
 });
 client.subscribe(topic);
 exports.default = client;
-//# sourceMappingURL=mqtt.js.map

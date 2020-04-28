@@ -8,20 +8,36 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-let WaterMeter = class WaterMeter extends sequelize_typescript_1.Model {
+const User_1 = __importDefault(require("./User"));
+let Admin = class Admin extends sequelize_typescript_1.Model {
 };
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], WaterMeter.prototype, "name", void 0);
+], Admin.prototype, "firstName", void 0);
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], WaterMeter.prototype, "birthday", void 0);
-WaterMeter = __decorate([
+], Admin.prototype, "lastName", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], Admin.prototype, "email", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], Admin.prototype, "password", void 0);
+__decorate([
+    sequelize_typescript_1.HasMany(() => User_1.default),
+    __metadata("design:type", Array)
+], Admin.prototype, "users", void 0);
+Admin = __decorate([
     sequelize_typescript_1.Table
-], WaterMeter);
-exports.default = WaterMeter;
-//# sourceMappingURL=WaterMeter.js.map
+], Admin);
+exports.default = Admin;
+//# sourceMappingURL=Admin.js.map

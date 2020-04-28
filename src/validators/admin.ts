@@ -1,6 +1,6 @@
 import {checkSchema} from 'express-validator'
-import SmartMeterSample from "../model/Smart-meter-sample";
-import User from "../model/User";
+import SmartMeterSample from "../models/Smart-meter-sample";
+import User from "../models/User";
 
 export const ReturnSamples = checkSchema({
     id: {

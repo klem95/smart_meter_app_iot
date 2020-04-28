@@ -22,4 +22,3 @@ userInterfaceRouter.get('/crone-ping', admin.cronePing);
 userInterfaceRouter.post('/sign-up', userInterfaceVal.signUp, passport_1.default.authenticate('signup', { session: false }), userInterface.signUp);
 userInterfaceRouter.post('/login', userInterface.login);
 exports.default = userInterfaceRouter;
-//# sourceMappingURL=user-interface.js.map

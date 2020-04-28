@@ -10,31 +10,25 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enums_1 = require("../utils/enums");
-let User = class User extends sequelize_typescript_1.Model {
+let ElectricitySupplier = class ElectricitySupplier extends sequelize_typescript_1.Model {
 };
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], User.prototype, "firstName", void 0);
+], ElectricitySupplier.prototype, "firstName", void 0);
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], User.prototype, "lastName", void 0);
+], ElectricitySupplier.prototype, "lastName", void 0);
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], User.prototype, "email", void 0);
+], ElectricitySupplier.prototype, "email", void 0);
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
-], User.prototype, "password", void 0);
-__decorate([
-    sequelize_typescript_1.Column(enums_1.roleType),
-    __metadata("design:type", String)
-], User.prototype, "role", void 0);
-User = __decorate([
+], ElectricitySupplier.prototype, "password", void 0);
+ElectricitySupplier = __decorate([
     sequelize_typescript_1.Table
-], User);
-exports.default = User;
-//# sourceMappingURL=User.js.map
+], ElectricitySupplier);
+exports.default = ElectricitySupplier;

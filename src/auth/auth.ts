@@ -1,9 +1,9 @@
 import passport from "passport";
-import User from '../model/User'
+import User from '../models/User'
 import {Strategy} from 'passport-jwt'
 import {jwtSecret} from '../jwtConfig'
-import Admin from "../model/Admin";
-import ElectricitySupplier from "../model/ElectricitySupplier";
+import Admin from "../models/Admin";
+import ElectricitySupplier from "../models/ElectricitySupplier";
 import {userInterfaceTypes} from "../utils/enums";
 
 

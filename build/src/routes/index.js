@@ -21,4 +21,3 @@ mainRouter.get('/*', (req, res) => {
     res.status(404).send('404. This endpoint does not exist');
 });
 exports.default = mainRouter;
-//# sourceMappingURL=index.js.map

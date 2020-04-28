@@ -1,5 +1,5 @@
 import {NextFunction, Request, Response} from "express";
-import Admin from "../model/Admin";
+import Admin from "../models/Admin";
 
 export const adminCheck = async (req:Request,res:Response, next:NextFunction) : Promise <void> =>{
     if (req.user != null){

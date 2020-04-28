@@ -13,11 +13,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
-const User_1 = __importDefault(require("../models/User"));
+const User_1 = __importDefault(require("../model/User"));
 const express_validator_1 = require("express-validator");
 const jwtConfig_1 = require("../jwtConfig");
-const Admin_1 = __importDefault(require("../models/Admin"));
-const ElectricitySupplier_1 = __importDefault(require("../models/ElectricitySupplier"));
+const Admin_1 = __importDefault(require("../model/Admin"));
+const ElectricitySupplier_1 = __importDefault(require("../model/ElectricitySupplier"));
 const jwt = require('jsonwebtoken');
 require('../auth/auth');
 // TEMP SOLUTION... BAD.....
@@ -92,4 +92,3 @@ exports.login = (req, res, next) => __awaiter(void 0, void 0, void 0, function* 
         next(Error('Could not login'));
     }
 });
-//# sourceMappingURL=user-interface.js.map

@@ -1,5 +1,5 @@
 import {decodePackage} from './utils/decoder'
-import SmartMeterSample from "./model/Smart-meter-sample";
+import SmartMeterSample from "./models/Smart-meter-sample";
 const mqtt = require('mqtt')
 
 

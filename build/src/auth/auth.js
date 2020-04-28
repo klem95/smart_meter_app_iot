@@ -13,10 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
-const User_1 = __importDefault(require("../models/User"));
+const User_1 = __importDefault(require("../model/User"));
 const jwtConfig_1 = require("../jwtConfig");
-const Admin_1 = __importDefault(require("../models/Admin"));
-const ElectricitySupplier_1 = __importDefault(require("../models/ElectricitySupplier"));
+const Admin_1 = __importDefault(require("../model/Admin"));
+const ElectricitySupplier_1 = __importDefault(require("../model/ElectricitySupplier"));
 const enums_1 = require("../utils/enums");
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
@@ -102,4 +102,3 @@ passport_1.default.use(new JWTstrategy({
         done(error);
     }
 })));
-//# sourceMappingURL=auth.js.map

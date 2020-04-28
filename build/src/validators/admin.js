@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
-const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
-const User_1 = __importDefault(require("../models/User"));
+const Smart_meter_sample_1 = __importDefault(require("../model/Smart-meter-sample"));
+const User_1 = __importDefault(require("../model/User"));
 exports.ReturnSamples = express_validator_1.checkSchema({
     id: {
         in: ['params'],
@@ -53,4 +53,3 @@ exports.avgSpending = express_validator_1.checkSchema({
         }
     },
 });
-//# sourceMappingURL=admin.js.map
