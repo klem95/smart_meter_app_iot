@@ -3,19 +3,6 @@ import SmartMeterSample from "../models/Smart-meter-sample";
 import User from "../models/User";
 
 export const ReturnSamples = checkSchema({
-    id: {
-        in: ['params'],
-        isInt: true,
-        errorMessage: "meterId needs to be of type int.",
-        custom: {
-            options: async val => {
-                if (await User.count({where:{id: val}}) === 0)
-                return Promise.reject()
-            },
-            errorMessage: 'The provided id does not match any user'
-        }
-    },
-
     startDate: {
         in: ['query'],
         isISO8601: true,
@@ -30,18 +17,6 @@ export const ReturnSamples = checkSchema({
 })
 
 export const avgSpending = checkSchema({
-    id: {
-        in: ['params'],
-        isInt: true,
-        errorMessage: "meterId needs to be of type int.",
-        custom: {
-            options: async val => {
-                if (await User.count({where:{id: val}}) === 0)
-                    return Promise.reject()
-            },
-            errorMessage: 'The provided id does not match any user'
-        }
-    },
 
     startDate: {
         in: ['query'],

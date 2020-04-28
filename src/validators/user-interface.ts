@@ -23,5 +23,4 @@ export const signUp = checkSchema({
         },
         errorMessage: "role needs to be one of the following: " + roleArr
     }
-
 })

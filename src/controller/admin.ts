@@ -64,22 +64,32 @@ export const avgSpending = async (req:Request, res:Response, next: NextFunction)
         const valError = validationResult(req)
         if (valError.isEmpty()){
 
-            const user = await User.findOne({where:{id: req.params.id}})
-            const meterId = user?.meterId
-            if (meterId != undefined){
-                const smartMeterSamples = await SmartMeterSample.findAll({where: {id: meterId}})
-                let totalWh : number = 0
-                let avgKWhPrice : number = 2.25
+            const user = await User.findOne({where:{id: req.params.id, adminId: req.body.id}})
+            if (user){
+                const startDate : any = new Date(req.query.startDate.toString())
+                const endDate : any = new Date(req.query.endDate.toString())
+                const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
+                if (smartMeterSamples.length != 0){
+                    let totalWh : number = 0
+                    let KWhPrice : number = 2.25
+                    let noOfSamples : number = 0
 
-                smartMeterSamples.forEach(val =>{
-                    totalWh += val.wattsPerHour
-                })
+                    smartMeterSamples.forEach(val =>{
+                        totalWh += val.wattsPerHour
+                        noOfSamples ++
+                    })
 
-                avgKWhPrice = (totalWh / 1000) * avgKWhPrice
-                const avgWh = totalWh / smartMeterSamples.length
-                res.status(200).json({success: true, result: {avgWh: avgWh, avgSpending: avgKWhPrice}})
+                    const avgKWh = (totalWh / noOfSamples) / 1000
+                    const totalSpending = (totalWh / 1000) * KWhPrice
+
+                    res.status(200).json({success: true, result: {avgKWh: avgKWh, totalSpending: totalSpending}})
+                } else {
+                    const smsStart = await SmartMeterSample.findOne({attributes:[[sequelize.fn('min',sequelize.col('date')),'min']]})
+                    const smsEnd = await SmartMeterSample.findOne({attributes:[[sequelize.fn('max',sequelize.col('date')),'max']]})
+                    res.status(400).json({ err: 'no samples found within the provided date range', samplePeriod: {first: smsStart, last: smsEnd}})
+                }
             } else {
-                res.status(400).json({ err: "Meter id undefined"})
+                res.status(400).json({ err: 'no user with the given id belongs to this admin profile'})
             }
         } else {
             res.status(400).json({ err: valError})
