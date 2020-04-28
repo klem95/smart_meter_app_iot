@@ -20,7 +20,6 @@ const userInterfaceRouter = express_1.Router();
 const jwt = require('jsonwebtoken');
 userInterfaceRouter.get('/crone-ping', admin.cronePing);
 userInterfaceRouter.post('/sign-up', userInterfaceVal.signUp, passport_1.default.authenticate('signup', { session: false }), userInterface.signUp);
-userInterfaceRouter.post('/admin-login', userInterface.login);
-userInterfaceRouter.post('/es-login', userInterface.login);
+userInterfaceRouter.post('/login', userInterface.login);
 exports.default = userInterfaceRouter;
 //# sourceMappingURL=user-interface.js.map

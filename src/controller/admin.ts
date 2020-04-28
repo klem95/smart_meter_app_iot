@@ -62,18 +62,23 @@ export const avgSpending = async (req:Request, res:Response, next: NextFunction)
     try{
         const valError = validationResult(req)
         if (valError.isEmpty()){
-            const smartMeterSamples = await SmartMeterSample.findAll({where: {meterId: req.params.id}})
-            let totalWh : number = 0
-            let avgKWhPrice : number = 2.25
+            const user = await User.findOne({where:{id: req.params.id}})
+            const meterId = user?.meterId
+            if (meterId != undefined){
+                const smartMeterSamples = await SmartMeterSample.findAll({where: {id: meterId}})
+                let totalWh : number = 0
+                let avgKWhPrice : number = 2.25
 
-            smartMeterSamples.forEach(val =>{
-                totalWh += val.wattsPerHour
-            })
+                smartMeterSamples.forEach(val =>{
+                    totalWh += val.wattsPerHour
+                })
 
-
-            avgKWhPrice = (totalWh / 1000) * avgKWhPrice
-            const avgWh = totalWh / smartMeterSamples.length
-            res.status(200).json({success: true, result: {avgWh: avgWh, avgSpending: avgKWhPrice}})
+                avgKWhPrice = (totalWh / 1000) * avgKWhPrice
+                const avgWh = totalWh / smartMeterSamples.length
+                res.status(200).json({success: true, result: {avgWh: avgWh, avgSpending: avgKWhPrice}})
+            } else {
+                res.status(400).json({ err: "Meter id undefined"})
+            }
         } else {
             res.status(400).json({ err: valError})
         }

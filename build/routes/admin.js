@@ -12,6 +12,7 @@ const admin = __importStar(require("../controller/admin"));
 const adminValidators = __importStar(require("../validators/admin"));
 const adminRouter = express_1.Router();
 adminRouter.get('/avg-spending/:id', adminValidators.avgSpending, admin.avgSpending);
+adminRouter.get('/return-users', admin.returnUsers);
 adminRouter.get('/return-samples/:id', adminValidators.ReturnSamples, admin.ReturnSamples);
 exports.default = adminRouter;
 //# sourceMappingURL=admin.js.map

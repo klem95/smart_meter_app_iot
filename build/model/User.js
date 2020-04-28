@@ -8,9 +8,12 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_typescript_1 = require("sequelize-typescript");
-const enums_1 = require("../utils/enums");
+const Admin_1 = __importDefault(require("./Admin"));
 let User = class User extends sequelize_typescript_1.Model {
 };
 __decorate([
@@ -28,11 +31,28 @@ __decorate([
 __decorate([
     sequelize_typescript_1.Column,
     __metadata("design:type", String)
+], User.prototype, "address", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
+], User.prototype, "country", void 0);
+__decorate([
+    sequelize_typescript_1.Column,
+    __metadata("design:type", String)
 ], User.prototype, "password", void 0);
 __decorate([
-    sequelize_typescript_1.Column(enums_1.roleType),
-    __metadata("design:type", String)
-], User.prototype, "role", void 0);
+    sequelize_typescript_1.Column,
+    __metadata("design:type", Number)
+], User.prototype, "meterId", void 0);
+__decorate([
+    sequelize_typescript_1.ForeignKey(() => Admin_1.default),
+    sequelize_typescript_1.Column,
+    __metadata("design:type", Number)
+], User.prototype, "adminId", void 0);
+__decorate([
+    sequelize_typescript_1.BelongsTo(() => Admin_1.default),
+    __metadata("design:type", Admin_1.default)
+], User.prototype, "admin", void 0);
 User = __decorate([
     sequelize_typescript_1.Table
 ], User);

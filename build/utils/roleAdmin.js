@@ -8,15 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const Admin_1 = __importDefault(require("../model/Admin"));
 exports.adminCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.user != null) {
         const userObj = Object.values(req.user);
-        const role = userObj[userObj.length - 1];
-        if (role != "admin") {
+        const adminId = userObj[0];
+        const adminEmail = userObj[1];
+        const adminUser = yield Admin_1.default.count({ where: { id: adminId, email: adminEmail } });
+        if (adminUser === 0) {
             res.status(400).json({ success: false, message: "Only admins have access to this endpoint " });
         }
         else {
+            req.body.id = adminId;
+            req.body.email = adminEmail;
             next();
         }
     }

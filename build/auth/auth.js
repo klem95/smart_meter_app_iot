@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
 const User_1 = __importDefault(require("../model/User"));
 const jwtConfig_1 = require("../jwtConfig");
+const Admin_1 = __importDefault(require("../model/Admin"));
+const ElectricitySupplier_1 = __importDefault(require("../model/ElectricitySupplier"));
+const enums_1 = require("../utils/enums");
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;
 const bcrypt = require('bcrypt');
@@ -33,35 +36,56 @@ passport_1.default.use('signup', new localStrategy({
         done(e);
     }
 })));
-passport_1.default.use('admin-login', new localStrategy({
+passport_1.default.use(enums_1.userInterfaceTypes.ADMIN + '-login', new localStrategy({
     usernameField: 'email',
     passwordField: 'password'
 }, (email, password, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const adminUser = yield User_1.default.findOne({ where: { role: 'admin', email: email } });
-        if (!adminUser)
+        const adminUser = yield Admin_1.default.findOne({ where: { email: email } });
+        if (!adminUser) {
             return done(null, false, { message: 'Email or password was incorrect' });
+            console.log("Email or password was incorrect");
+        }
         const validPass = yield bcrypt.compare(password, adminUser.password);
-        if (!validPass)
+        if (!validPass) {
+            console.log("Email or password was incorrect");
             return done(null, false, { message: 'Email or password was incorrect' });
+        }
         return done(null, adminUser, { message: 'Logged in Successfully' });
     }
     catch (e) {
         done(e);
     }
 })));
-passport_1.default.use('es-login', new localStrategy({
+passport_1.default.use(enums_1.userInterfaceTypes.SUPPLIER + '-login', new localStrategy({
     usernameField: 'email',
     passwordField: 'password'
 }, (email, password, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const adminUser = yield User_1.default.findOne({ where: { role: 'electricity supplier', email: email } });
-        if (!adminUser)
+        const esUser = yield ElectricitySupplier_1.default.findOne({ where: { email: email } });
+        if (!esUser)
             return done(null, false, { message: 'Email or password was incorrect' });
-        const validPass = yield bcrypt.compare(password, adminUser.password);
+        const validPass = yield bcrypt.compare(password, esUser.password);
         if (!validPass)
             return done(null, false, { message: 'Email or password was incorrect' });
-        return done(null, adminUser, { message: 'Logged in Successfully' });
+        return done(null, esUser, { message: 'Logged in Successfully' });
+    }
+    catch (e) {
+        done(e);
+    }
+})));
+passport_1.default.use(enums_1.userInterfaceTypes.CUSTOMER + '-login', new localStrategy({
+    usernameField: 'email',
+    passwordField: 'password'
+}, (email, password, done) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const user = yield User_1.default.findOne({ where: { email: email } });
+        if (!user)
+            return done(null, false, { message: 'Email or password was incorrect' });
+        const validPass = yield bcrypt.compare(password, user.password);
+        if (!validPass)
+            return done(null, false, { message: 'Email or password was incorrect' });
+        return done(null, user, { message: 'Logged in Successfully' });
     }
     catch (e) {
         done(e);
