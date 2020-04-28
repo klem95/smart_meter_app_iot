@@ -3,6 +3,6 @@ import * as electricitySupplier from '../controller/electricity-supplier'
 
 const electricitySupplierRouter = Router()
 
-electricitySupplierRouter.use('/',electricitySupplier.getDate)
+electricitySupplierRouter.get('/',electricitySupplier.getDate)
 
 export default electricitySupplierRouter

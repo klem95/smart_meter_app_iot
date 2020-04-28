@@ -24,6 +24,7 @@ services: # Inside is all the defined containers.
     command: npm run develop
     volumes:
       - .:/usr/app
+      - /usr/app/node_modules # In order to link the .dockerignore
     ports:
       - "3000:3000" # Mounting container
       - "9229:9229" # Mounting data for nodemon connection

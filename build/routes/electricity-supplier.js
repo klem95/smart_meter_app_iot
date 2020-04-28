@@ -10,6 +10,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const electricitySupplier = __importStar(require("../controller/electricity-supplier"));
 const electricitySupplierRouter = express_1.Router();
-electricitySupplierRouter.use('/', electricitySupplier.getDate);
+electricitySupplierRouter.get('/', electricitySupplier.getDate);
 exports.default = electricitySupplierRouter;
 //# sourceMappingURL=electricity-supplier.js.map
