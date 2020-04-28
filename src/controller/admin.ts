@@ -60,6 +60,7 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
 
 export const avgSpending = async (req:Request, res:Response, next: NextFunction) : Promise<void> => {
     try{
+        /*
         const valError = validationResult(req)
         if (valError.isEmpty()){
             const user = await User.findOne({where:{id: req.params.id}})
@@ -82,6 +83,8 @@ export const avgSpending = async (req:Request, res:Response, next: NextFunction)
         } else {
             res.status(400).json({ err: valError})
         }
+
+         */
     } catch (e) {
         next(new Error('Error! Could not return ranking'))
     }
