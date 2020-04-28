@@ -16,8 +16,8 @@ export default class Admin extends Model<Admin>{
     @Column
     password!: string
 
-    @HasMany(() => User)
-    users?: User[];
 
+    @HasMany(() => User)
+    users!: User[];
 
 }

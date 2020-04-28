@@ -13,8 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
+<<<<<<< HEAD
 const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
 const User_1 = __importDefault(require("../models/User"));
+=======
+const User_1 = __importDefault(require("../model/User"));
+>>>>>>> e13bf01e8864eb172c55fec8e4078a9da3385f57
 exports.ReturnSamples = express_validator_1.checkSchema({
     id: {
         in: ['params'],
@@ -46,7 +50,7 @@ exports.avgSpending = express_validator_1.checkSchema({
         errorMessage: "meterId needs to be of type int",
         custom: {
             options: (val) => __awaiter(void 0, void 0, void 0, function* () {
-                if ((yield Smart_meter_sample_1.default.count({ where: { meterId: val } })) === 0)
+                if ((yield User_1.default.count({ where: { id: val } })) === 0)
                     return Promise.reject();
             }),
             errorMessage: 'The provided id does not match any meter'

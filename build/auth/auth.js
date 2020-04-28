@@ -15,8 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const passport_1 = __importDefault(require("passport"));
 const User_1 = __importDefault(require("../models/User"));
 const jwtConfig_1 = require("../jwtConfig");
+<<<<<<< HEAD
 const Admin_1 = __importDefault(require("../models/Admin"));
 const ElectricitySupplier_1 = __importDefault(require("../models/ElectricitySupplier"));
+=======
+const Admin_1 = __importDefault(require("../model/Admin"));
+const ElectricitySupplier_1 = __importDefault(require("../model/ElectricitySupplier"));
+>>>>>>> e13bf01e8864eb172c55fec8e4078a9da3385f57
 const enums_1 = require("../utils/enums");
 const JWTstrategy = require('passport-jwt').Strategy;
 const ExtractJWT = require('passport-jwt').ExtractJwt;

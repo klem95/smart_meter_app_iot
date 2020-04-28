@@ -22,11 +22,16 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
 const sequelize_1 = __importStar(require("sequelize"));
+<<<<<<< HEAD
 const User_1 = __importDefault(require("../models/User"));
+=======
+const User_1 = __importDefault(require("../model/User"));
+>>>>>>> e13bf01e8864eb172c55fec8e4078a9da3385f57
 exports.cronePing = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({ success: true });
 });
 exports.returnUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+<<<<<<< HEAD
     try {
         const valError = express_validator_1.validationResult(req);
         if (valError.isEmpty()) {
@@ -36,6 +41,48 @@ exports.returnUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, func
             }
             else {
                 res.status(400).json({ err: 'no associated users could be found' });
+            }
+        }
+        else {
+            res.status(400).json({ err: 'Could not return associated users' });
+        }
+    }
+    catch (e) {
+        next(new Error('Error! Could not return sample data'));
+    }
+});
+exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const valError = express_validator_1.validationResult(req);
+        if (valError.isEmpty()) {
+            console.log(req.body);
+            const user = yield User_1.default.findOne({ where: { id: req.params.id, adminId: req.body.id } });
+            if (user) {
+                const startDate = new Date(req.query.startDate.toString());
+                const endDate = new Date(req.query.endDate.toString());
+                const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: user.meterId, date: { [sequelize_1.Op.between]: [startDate, endDate] } } });
+                if (smartMeterSamples.length != 0) {
+                    res.status(200).json({ success: true, result: { smartMeterSamples } });
+                }
+                else {
+                    const smsStart = yield Smart_meter_sample_1.default.findOne({ attributes: [[sequelize_1.default.fn('min', sequelize_1.default.col('date')), 'min']] });
+                    const smsEnd = yield Smart_meter_sample_1.default.findOne({ attributes: [[sequelize_1.default.fn('max', sequelize_1.default.col('date')), 'max']] });
+                    res.status(400).json({ err: 'no samples found within the provided date range', samplePeriod: { first: smsStart, last: smsEnd } });
+                }
+            }
+            else {
+                res.status(400).json({ err: 'no user with the given id belongs to this admin profile' });
+=======
+    try {
+        const valError = express_validator_1.validationResult(req);
+        if (valError.isEmpty()) {
+            const users = yield User_1.default.findAll({ where: { adminId: req.body.id } });
+            if (users) {
+                res.status(200).json({ success: true, result: users });
+            }
+            else {
+                res.status(400).json({ err: 'no associated users could be found' });
+>>>>>>> e13bf01e8864eb172c55fec8e4078a9da3385f57
             }
         }
         else {
@@ -79,21 +126,31 @@ exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const valError = express_validator_1.validationResult(req);
-        if (valError.isEmpty()) {
-            const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: req.params.id } });
-            let totalWh = 0;
-            let avgKWhPrice = 2.25;
-            smartMeterSamples.forEach(val => {
-                totalWh += val.wattsPerHour;
-            });
-            avgKWhPrice = (totalWh / 1000) * avgKWhPrice;
-            const avgWh = totalWh / smartMeterSamples.length;
-            res.status(200).json({ success: true, result: { avgWh: avgWh, avgSpending: avgKWhPrice } });
+        /* //
+        const valError = validationResult(req)
+        if (valError.isEmpty()){
+            const user = await User.findOne({where:{id: req.params.id}})
+            const meterId = user?.meterId
+            if (meterId != undefined){
+                const smartMeterSamples = await SmartMeterSample.findAll({where: {id: meterId}})
+                let totalWh : number = 0
+                let avgKWhPrice : number = 2.25
+
+                smartMeterSamples.forEach(val =>{
+                    totalWh += val.wattsPerHour
+                })
+
+                avgKWhPrice = (totalWh / 1000) * avgKWhPrice
+                const avgWh = totalWh / smartMeterSamples.length
+                res.status(200).json({success: true, result: {avgWh: avgWh, avgSpending: avgKWhPrice}})
+            } else {
+                res.status(400).json({ err: "Meter id undefined"})
+            }
+        } else {
+            res.status(400).json({ err: valError})
         }
-        else {
-            res.status(400).json({ err: valError });
-        }
+
+         */
     }
     catch (e) {
         next(new Error('Error! Could not return ranking'));
