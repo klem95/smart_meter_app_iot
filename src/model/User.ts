@@ -29,7 +29,7 @@ export default class User extends Model<User>{
     @ForeignKey(() => Admin)
     @Column
     adminId?: number
-    //
+
 
     @BelongsTo(() => Admin)
     admin?: Admin

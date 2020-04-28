@@ -79,28 +79,31 @@ exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const valError = express_validator_1.validationResult(req);
-        if (valError.isEmpty()) {
-            const user = yield User_1.default.findOne({ where: { id: req.params.id } });
-            const meterId = user === null || user === void 0 ? void 0 : user.meterId;
-            if (meterId != undefined) {
-                const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { id: meterId } });
-                let totalWh = 0;
-                let avgKWhPrice = 2.25;
-                smartMeterSamples.forEach(val => {
-                    totalWh += val.wattsPerHour;
-                });
-                avgKWhPrice = (totalWh / 1000) * avgKWhPrice;
-                const avgWh = totalWh / smartMeterSamples.length;
-                res.status(200).json({ success: true, result: { avgWh: avgWh, avgSpending: avgKWhPrice } });
+        /*
+        const valError = validationResult(req)
+        if (valError.isEmpty()){
+            const user = await User.findOne({where:{id: req.params.id}})
+            const meterId = user?.meterId
+            if (meterId != undefined){
+                const smartMeterSamples = await SmartMeterSample.findAll({where: {id: meterId}})
+                let totalWh : number = 0
+                let avgKWhPrice : number = 2.25
+
+                smartMeterSamples.forEach(val =>{
+                    totalWh += val.wattsPerHour
+                })
+
+                avgKWhPrice = (totalWh / 1000) * avgKWhPrice
+                const avgWh = totalWh / smartMeterSamples.length
+                res.status(200).json({success: true, result: {avgWh: avgWh, avgSpending: avgKWhPrice}})
+            } else {
+                res.status(400).json({ err: "Meter id undefined"})
             }
-            else {
-                res.status(400).json({ err: "Meter id undefined" });
-            }
+        } else {
+            res.status(400).json({ err: valError})
         }
-        else {
-            res.status(400).json({ err: valError });
-        }
+
+         */
     }
     catch (e) {
         next(new Error('Error! Could not return ranking'));
