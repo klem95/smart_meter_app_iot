@@ -28,10 +28,10 @@ export default class User extends Model<User>{
 
     @ForeignKey(() => Admin)
     @Column
-    adminId?: number
-
+    adminId!: number;
 
     @BelongsTo(() => Admin)
-    admin?: Admin
+    admin!: Admin;
+
 
 }

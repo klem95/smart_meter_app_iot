@@ -79,7 +79,7 @@ exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
 });
 exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        /*
+        /* //
         const valError = validationResult(req)
         if (valError.isEmpty()){
             const user = await User.findOne({where:{id: req.params.id}})

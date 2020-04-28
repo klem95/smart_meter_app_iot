@@ -60,7 +60,7 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
 
 export const avgSpending = async (req:Request, res:Response, next: NextFunction) : Promise<void> => {
     try{
-        /*
+        /* //
         const valError = validationResult(req)
         if (valError.isEmpty()){
             const user = await User.findOne({where:{id: req.params.id}})
