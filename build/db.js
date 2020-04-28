@@ -5,7 +5,7 @@ let sequelize;
 let configs = {
     dialect: 'postgres',
     storage: ':memory:',
-    models: [__dirname + '/model']
+    models: [__dirname + '/models']
 };
 if (process.env.DATABASE_URL != null) {
     const dbUrl = process.env.DATABASE_URL;

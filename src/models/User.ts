@@ -29,20 +29,14 @@ export default class User extends Model<User>{
 
     @AllowNull(false)
     @ForeignKey(() => Admin)
-<<<<<<< HEAD:src/models/User.ts
     @Column({
         unique: true,
     })
-=======
     @Column
->>>>>>> e13bf01e8864eb172c55fec8e4078a9da3385f57:src/model/User.ts
     adminId!: number;
 
     @BelongsTo(() => Admin)
     admin!: Admin;
-<<<<<<< HEAD:src/models/User.ts
-=======
 
->>>>>>> e13bf01e8864eb172c55fec8e4078a9da3385f57:src/model/User.ts
 
 }

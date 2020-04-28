@@ -16,13 +16,8 @@ const passport_1 = __importDefault(require("passport"));
 const User_1 = __importDefault(require("../models/User"));
 const express_validator_1 = require("express-validator");
 const jwtConfig_1 = require("../jwtConfig");
-<<<<<<< HEAD
 const Admin_1 = __importDefault(require("../models/Admin"));
 const ElectricitySupplier_1 = __importDefault(require("../models/ElectricitySupplier"));
-=======
-const Admin_1 = __importDefault(require("../model/Admin"));
-const ElectricitySupplier_1 = __importDefault(require("../model/ElectricitySupplier"));
->>>>>>> e13bf01e8864eb172c55fec8e4078a9da3385f57
 const jwt = require('jsonwebtoken');
 require('../auth/auth');
 // TEMP SOLUTION... BAD.....
