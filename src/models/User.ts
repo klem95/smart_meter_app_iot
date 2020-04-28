@@ -29,9 +29,6 @@ export default class User extends Model<User>{
 
     @AllowNull(false)
     @ForeignKey(() => Admin)
-    @Column({
-        unique: true,
-    })
     @Column
     adminId!: number;
 

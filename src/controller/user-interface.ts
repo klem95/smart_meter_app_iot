@@ -19,11 +19,19 @@ export const signUp = async (req:Request, res: Response, next:NextFunction) : Pr
             const email = userObj[0]
 
             if(req.body.role == 'user') {
+                console.log("1")
                 const newUser = new User({firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: userObj[1],  adminId: req.body.adminId, meterId: req.body.meterId,address:req.body.address, country: req.body.country})
+                console.log("2")
                 newUser.save()
                 if (newUser){
+                    console.log("3")
                     res.status(200).json({
                         message: 'Signup successful',
+                        user: newUser
+                    })
+                } else {
+                    res.status(400).json({
+                        message: 'Could not make user',
                         user: newUser
                     })
                 }
