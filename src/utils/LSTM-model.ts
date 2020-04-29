@@ -1,5 +1,6 @@
 
 import SmartMeterSample from "../models/Smart-meter-sample";
+import {io} from '../index'
 const tf = require('@tensorflow/tfjs-node')
 
 export let LSTMmodel : any
@@ -9,6 +10,7 @@ const n_items = 47
 let data_raw : Array<any> = []
 let window_size : number
 let resultdata : any = [];
+
 
 export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rate:number,_n_hl:number, _window_size:number) : Promise<void> => {
     console.log('Training model')
@@ -33,6 +35,8 @@ export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rat
     let outputs = SMA.map(function(outp_f:any) { return outp_f['avg']; });
 
     let callback = function(epoch:number, log:any) {
+        const test = io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' }); // This will emit the event to all connected sockets
+        console.log(test)
         console.log("Epoch:"+ (epoch + 1) + " Loss: " + log.loss);
         console.log(((epoch + 1) * (100 / n_epochs)).toString() + "%");
     }

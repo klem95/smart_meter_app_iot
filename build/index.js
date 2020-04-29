@@ -24,7 +24,7 @@ const cors = require('cors');
 //const router = require('./routes')
 const port = process.env.PORT || 3000;
 const app = express_1.default();
-app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
+const server = app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         yield db_1.default.sync();
         console.log(`Server listening on port ${port}`);
@@ -34,6 +34,12 @@ app.listen(port, () => __awaiter(void 0, void 0, void 0, function* () {
         throw e;
     }
 }));
+exports.io = require('socket.io')(server);
+exports.io.on('connection', (socket) => {
+    socket.on('chat message', (msg) => {
+        console.log('message: ' + msg);
+    });
+});
 app.use(cors());
 app.use(body_parser_1.default.urlencoded({ extended: true }));
 app.use(passport_1.default.initialize());

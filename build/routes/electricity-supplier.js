@@ -11,7 +11,9 @@ const express_1 = require("express");
 const electricitySupplier = __importStar(require("../controller/electricity-supplier"));
 const esValidators = __importStar(require("../validators/es"));
 const electricitySupplierRouter = express_1.Router();
-electricitySupplierRouter.get('/generateModel', esValidators.generateModel, electricitySupplier.generateModel);
-electricitySupplierRouter.get('/predict', esValidators.generateModel, electricitySupplier.getPredictions);
+electricitySupplierRouter.get('/', electricitySupplier.getAdminsAndUsers);
+electricitySupplierRouter.get('/generate-model', esValidators.generateModel, electricitySupplier.generateModel);
+electricitySupplierRouter.get('/predict/:id', esValidators.getPredictions, electricitySupplier.getPredictions);
+electricitySupplierRouter.get('/return-samples/:id', esValidators.ReturnSamples, electricitySupplier.ReturnSamples);
 exports.default = electricitySupplierRouter;
 //# sourceMappingURL=electricity-supplier.js.map

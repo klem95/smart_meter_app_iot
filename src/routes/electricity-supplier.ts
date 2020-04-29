@@ -8,5 +8,6 @@ electricitySupplierRouter.get('/',electricitySupplier.getAdminsAndUsers)
 electricitySupplierRouter.get('/generate-model',esValidators.generateModel,electricitySupplier.generateModel)
 electricitySupplierRouter.get('/predict/:id',esValidators.getPredictions,electricitySupplier.getPredictions)
 electricitySupplierRouter.get('/return-samples/:id',esValidators.ReturnSamples, electricitySupplier.ReturnSamples)
+electricitySupplierRouter.get('/avg-spending', electricitySupplier.avgSpending)
 
 export default electricitySupplierRouter

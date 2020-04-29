@@ -12,18 +12,20 @@ export const getAdminsAndUsers = async (req:Request,res:Response, next:NextFunct
         let users : User [] = []
 
         if (admins.length > 0) {
+            console.log(admins.length )
             for (let i = 0; i < admins.length; i++){
                 const adminId = admins[i].id
                 let _users = await User.findAll({where:{adminId:adminId}})
+                console.log(_users )
                 _users.forEach(value => {
                     users.push(value)
                 })
-                res.status(200).json({success:true,result:{admins: admins, users:users}})
             }
+            res.status(200).json({success:true,result:{admins: admins, customers:users}})
+
         } else{
             res.status(400).json({message:'no admins were found'})
         }
-
 
     } catch (e) {
         next(new Error('Error! Could not retrive admins and users'))
@@ -107,5 +109,47 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
         }
     } catch (e) {
         next(new Error('Error! Could not return sample data'))
+    }
+}
+
+export const avgSpending = async (req:Request, res:Response, next: NextFunction) : Promise<void> => {
+    try{
+            let customersSpending : any[] =[]
+            const user = await User.findAll({})
+            if (user){
+                const startDate : any = new Date(req.query.startDate.toString())
+                const endDate : any = new Date(req.query.endDate.toString())
+
+                for (let i = 0; i < user.length; i++) {
+                    let smartMeterSamples = await SmartMeterSample.findAll({
+                        where: {
+                            meterId: user[i].meterId,
+                            date: {[Op.between]: [startDate, endDate]}
+                        }
+                    })
+                    if (smartMeterSamples.length != 0) {
+                        let totalWh: number = 0
+                        let KWhPrice: number = 2.25
+                        let noOfSamples: number = 0
+
+                        smartMeterSamples.forEach(val => {
+                            totalWh += val.wattsPerHour
+                            noOfSamples++
+                        })
+
+                        const avgKWh = (totalWh / noOfSamples) / 1000
+                        const totalSpending = (totalWh / 1000) * KWhPrice
+
+                        customersSpending.push({id: user[i].id, avgKWh: avgKWh, totalSpending: totalSpending})
+                    }
+                }
+
+                    res.status(200).json({success: true, result: customersSpending})
+            } else {
+                res.status(400).json({ err: 'no user with the given id belongs to this admin profile'})
+            }
+
+    } catch (e) {
+        next(new Error('Error! Could not return ranking'))
     }
 }

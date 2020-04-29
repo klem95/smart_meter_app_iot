@@ -9,12 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const index_1 = require("../index");
 const tf = require('@tensorflow/tfjs-node');
 let result;
 let SMA;
 const n_items = 47;
 let data_raw = [];
 let window_size;
+let resultdata = [];
 exports.train = (dataSet, _n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Training model');
     const n_epochs = _n_epochs;
@@ -31,6 +33,8 @@ exports.train = (dataSet, _n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter
     });
     let outputs = SMA.map(function (outp_f) { return outp_f['avg']; });
     let callback = function (epoch, log) {
+        const test = index_1.io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' }); // This will emit the event to all connected sockets
+        console.log(test);
         console.log("Epoch:" + (epoch + 1) + " Loss: " + log.loss);
         console.log(((epoch + 1) * (100 / n_epochs)).toString() + "%");
     };
@@ -82,11 +86,13 @@ const trainModel = (inputs, outputs, size, window_size, n_epochs, learning_rate,
         } });
     return { model: model, stats: hist };
 });
-exports.predictFuture = () => __awaiter(void 0, void 0, void 0, function* () {
-    let inputs = SMA.map(function (inp_f) {
+exports.predictFuture = (dataSet) => __awaiter(void 0, void 0, void 0, function* () {
+    data_raw = yield convertData(dataSet);
+    const _SMA = yield computeSMA(dataSet, window_size);
+    let inputs = _SMA.map(function (inp_f) {
         return inp_f['set'].map(function (val) { return val['wattsPerHour']; });
     });
-    let outputs = SMA.map(function (outp_f) { return outp_f['avg']; });
+    let outputs = _SMA.map(function (outp_f) { return outp_f['avg']; });
     let outps = outputs.slice(Math.floor(n_items / 100 * outputs.length), outputs.length);
     let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
     let pred_vals = yield predict(inps, exports.LSTMmodel);
@@ -97,8 +103,8 @@ exports.predictFuture = () => __awaiter(void 0, void 0, void 0, function* () {
     let timestamps_c = data_raw.map(function (val) {
         return val['timestamp'];
     }).splice(window_size + Math.floor(n_items / 100 * outputs.length), data_raw.length);
-    let sma = SMA.map(function (val) { return val['avg']; });
-    let prices = data_raw.map(function (val) { return val['price']; });
+    let sma = _SMA.map(function (val) { return val['avg']; });
+    let prices = data_raw.map(function (val) { return val['wattsPerHour']; });
     let futureValues = [];
     let futureTimeStamps = [];
     let nextDay = [];
@@ -109,6 +115,8 @@ exports.predictFuture = () => __awaiter(void 0, void 0, void 0, function* () {
     let year = mydate.getFullYear();
     let inpsf = [inputs[inputs.length - 2]];
     let hoursToPredict = 24;
+    let stringDay = (day < 10) ? "0" + day.toString() : day.toString();
+    let stringMonth = (month < 10) ? "0" + month.toString() : month.toString();
     for (let i = 0; i < hoursToPredict; i++) {
         let fValue = yield predict(inpsf, exports.LSTMmodel);
         fValue = fValue[0];
@@ -116,9 +124,9 @@ exports.predictFuture = () => __awaiter(void 0, void 0, void 0, function* () {
         inpsf[0].shift();
         inpsf[0].push(fValue);
         if (i < 10)
-            nextDay.push(year + "-" + month + "-" + day + "T0" + i + ":00:00.000Z");
+            nextDay.push(year + "-" + stringMonth + "-" + stringDay + "T0" + i + ":00:00.000Z");
         else
-            nextDay.push(year + "-" + month + "-" + day + "T" + i + ":00:00.000Z");
+            nextDay.push(year + "-" + stringMonth + "-" + stringDay + "T" + i + ":00:00.000Z");
     }
     let average = [];
     for (let i = 0; i < 24; i++) {
@@ -138,7 +146,11 @@ exports.predictFuture = () => __awaiter(void 0, void 0, void 0, function* () {
         averageAll.push(avgSum);
     }
     let avgsumTimeLabel = [...timestamps_a, ...nextDay];
-    return { futureVal: futureValues, avgLabels: avgsumTimeLabel };
+    return { initial_timestamps: timestamps_a,
+        initial_wH: prices, moving_avg_timestamps: timestamps_b,
+        SMA: sma, next_day_timestamps: nextDay, prediction: futureValues,
+        combined_avg_Wh: average, avg_timestamps: avgsumTimeLabel, total_Wh_avg: averageAll
+    };
 });
 const predict = (inps, model) => __awaiter(void 0, void 0, void 0, function* () {
     const outps = model.predict(tf.tensor2d(inps, [inps.length,

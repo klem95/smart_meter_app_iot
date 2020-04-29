@@ -63,11 +63,18 @@ passport_1.default.use(enums_1.userInterfaceTypes.SUPPLIER + '-login', new local
 }, (email, password, done) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const esUser = yield ElectricitySupplier_1.default.findOne({ where: { email: email } });
-        if (!esUser)
+        console.log("begin");
+        console.log(esUser);
+        if (!esUser) {
+            console.log("no user");
             return done(null, false, { message: 'Email or password was incorrect' });
+        }
         const validPass = yield bcrypt.compare(password, esUser.password);
-        if (!validPass)
+        if (!validPass) {
+            console.log("wrong password");
             return done(null, false, { message: 'Email or password was incorrect' });
+        }
+        console.log("send");
         return done(null, esUser, { message: 'Logged in Successfully' });
     }
     catch (e) {
