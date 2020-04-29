@@ -44,5 +44,19 @@ export const generateModel = checkSchema({
         },
         errorMessage: 'windowSize has to be of type int  (min: 1, max: 2000)'
     }
+})
 
+export const getPredictions = checkSchema({
+    id: {
+        in: ['params'],
+        isInt: true,
+        errorMessage: "id needs to be of type int.",
+        custom: {
+            options: async val => {
+                if (await User.count({where:{id: val}}) === 0)
+                    return Promise.reject()
+            },
+            errorMessage: 'The provided id does not match any user'
+        }
+    }
 })

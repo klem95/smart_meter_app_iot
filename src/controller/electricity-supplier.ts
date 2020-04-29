@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import SmartMeterSample from "../models/Smart-meter-sample";
 import {train, predictFuture,LSTMmodel} from "../utils/LSTM-model";
 import {validationResult} from "express-validator";
+import User from "../models/User";
 
 export const generateModel = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {
@@ -27,13 +28,24 @@ export const generateModel = async (req:Request,res:Response, next:NextFunction)
 
 export const getPredictions = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {
-        if(LSTMmodel != undefined) {
-            const predictions = await predictFuture()
-            res.status(200).json({predictions})
-        } else {
-            res.status(400).json({error: "Please train model"})
-        }
+        const valError = validationResult(req)
+        if (valError) {
+            if(LSTMmodel != undefined) {
+                const user = await User.findOne({where:{id: req.params.id}})
+                const meterId = user?.meterId
+                console.log(user)
+                if (meterId != undefined){
+                    const meterData = await SmartMeterSample.findAll({where:{meterId: meterId}})
 
+                    const predictions = await predictFuture(meterData)
+                    res.status(200).json({predictions})
+                }
+            } else {
+                res.status(400).json({error: "Please train model"})
+            }
+        } else {
+            res.status(400).json({error: valError})
+        }
     }catch (e) {
         console.log(e)
         next(new Error('Error! Could not generate predictions'))

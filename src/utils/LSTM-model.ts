@@ -8,6 +8,7 @@ let SMA : any
 const n_items = 47
 let data_raw : Array<any> = []
 let window_size : number
+let resultdata : any = [];
 
 export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rate:number,_n_hl:number, _window_size:number) : Promise<void> => {
     console.log('Training model')
@@ -106,11 +107,14 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
 }
 
 
-export const predictFuture = async () : Promise<object> => {
-    let inputs = SMA.map(function(inp_f:any) {
+export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> => {
+    data_raw = await convertData(dataSet)
+    const _SMA = await computeSMA(dataSet,window_size)
+
+    let inputs = _SMA.map(function(inp_f:any) {
         return inp_f['set'].map(function (val:SmartMeterSample) { return val['wattsPerHour']; }); });
 
-    let outputs = SMA.map(function(outp_f:any) { return outp_f['avg']; });
+    let outputs = _SMA.map(function(outp_f:any) { return outp_f['avg']; });
 
     let outps = outputs.slice(Math.floor(n_items / 100 * outputs.length), outputs.length);
 
@@ -125,8 +129,8 @@ export const predictFuture = async () : Promise<object> => {
     let timestamps_c = data_raw.map(function (val:any) {
         return val['timestamp']; }).splice(window_size + Math.floor(n_items / 100 * outputs.length), data_raw.length);
 
-    let sma = SMA.map(function (val:any) { return val['avg']; });
-    let prices = data_raw.map(function (val:any) { return val['price']; });
+    let sma = _SMA.map(function (val:any) { return val['avg']; });
+    let prices = data_raw.map(function (val:any) { return val['wattsPerHour']; });
 
     let futureValues = [];
     let futureTimeStamps = [];
@@ -177,7 +181,12 @@ export const predictFuture = async () : Promise<object> => {
     }
 
     let avgsumTimeLabel = [...timestamps_a, ...nextDay];
-    return {futureVal: futureValues, avgLabels: avgsumTimeLabel}
+
+    return {initial_timestamps: timestamps_a,
+        initial_wH: prices, moving_avg_timestamps: timestamps_b,
+        SMA: sma, next_day_timestamps: nextDay, prediction: futureValues,
+        combined_avg_Wh: average, avg_timestamps: avgsumTimeLabel, total_Wh_avg: averageAll
+    }
 }
 
 const predict = async (inps:any,model:any) : Promise <any> => {
