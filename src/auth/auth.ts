@@ -59,12 +59,18 @@ passport.use(userInterfaceTypes.SUPPLIER+'-login', new localStrategy({
         passwordField : 'password'
     }, async  (email:string, password:string, done:any) => {
     try{
-        const esUser = await ElectricitySupplier.findOne({where:{ email: email}})
-        if(!esUser)
+        const esUser = await ElectricitySupplier.findOne({where:{email: email}})
+        console.log(esUser)
+        if(!esUser){
+            console.log("no user")
             return done(null, false, { message : 'Email or password was incorrect'})
+
+        }
         const validPass = await bcrypt.compare(password, esUser.password);
-        if (!validPass)
+        if (!validPass){
             return done(null, false, { message : 'Email or password was incorrect'})
+            console.log("wrong password")
+        }
         return done(null, esUser, { message : 'Logged in Successfully'});
     }catch (e) {
         done(e)
