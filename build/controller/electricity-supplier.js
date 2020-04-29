@@ -8,8 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getDate = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
+const LSTM_model_1 = require("../utils/LSTM-model");
+let meterId = 1;
+exports.generateModel = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    const waterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: meterId } });
+    LSTM_model_1.train(waterSamples);
     res.send("electricity supplier");
 });
 //# sourceMappingURL=electricity-supplier.js.map

@@ -81,21 +81,31 @@ exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, func
     try {
         const valError = express_validator_1.validationResult(req);
         if (valError.isEmpty()) {
-            const user = yield User_1.default.findOne({ where: { id: req.params.id } });
-            const meterId = user === null || user === void 0 ? void 0 : user.meterId;
-            if (meterId != undefined) {
-                const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { id: meterId } });
-                let totalWh = 0;
-                let avgKWhPrice = 2.25;
-                smartMeterSamples.forEach(val => {
-                    totalWh += val.wattsPerHour;
-                });
-                avgKWhPrice = (totalWh / 1000) * avgKWhPrice;
-                const avgWh = totalWh / smartMeterSamples.length;
-                res.status(200).json({ success: true, result: { avgWh: avgWh, avgSpending: avgKWhPrice } });
+            const user = yield User_1.default.findOne({ where: { id: req.params.id, adminId: req.body.id } });
+            if (user) {
+                const startDate = new Date(req.query.startDate.toString());
+                const endDate = new Date(req.query.endDate.toString());
+                const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: user.meterId, date: { [sequelize_1.Op.between]: [startDate, endDate] } } });
+                if (smartMeterSamples.length != 0) {
+                    let totalWh = 0;
+                    let KWhPrice = 2.25;
+                    let noOfSamples = 0;
+                    smartMeterSamples.forEach(val => {
+                        totalWh += val.wattsPerHour;
+                        noOfSamples++;
+                    });
+                    const avgKWh = (totalWh / noOfSamples) / 1000;
+                    const totalSpending = (totalWh / 1000) * KWhPrice;
+                    res.status(200).json({ success: true, result: { avgKWh: avgKWh, totalSpending: totalSpending } });
+                }
+                else {
+                    const smsStart = yield Smart_meter_sample_1.default.findOne({ attributes: [[sequelize_1.default.fn('min', sequelize_1.default.col('date')), 'min']] });
+                    const smsEnd = yield Smart_meter_sample_1.default.findOne({ attributes: [[sequelize_1.default.fn('max', sequelize_1.default.col('date')), 'max']] });
+                    res.status(400).json({ err: 'no samples found within the provided date range', samplePeriod: { first: smsStart, last: smsEnd } });
+                }
             }
             else {
-                res.status(400).json({ err: "Meter id undefined" });
+                res.status(400).json({ err: 'no user with the given id belongs to this admin profile' });
             }
         }
         else {

@@ -47,9 +47,6 @@ __decorate([
 __decorate([
     sequelize_typescript_1.AllowNull(false),
     sequelize_typescript_1.ForeignKey(() => Admin_1.default),
-    sequelize_typescript_1.Column({
-        unique: true,
-    }),
     sequelize_typescript_1.Column,
     __metadata("design:type", Number)
 ], User.prototype, "adminId", void 0);

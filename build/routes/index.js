@@ -14,7 +14,7 @@ const enums_1 = require("../utils/enums");
 const mainRouter = express_1.Router();
 mainRouter.use('/' + enums_1.userInterfaceTypes.ADMIN, passport_1.default.authenticate('jwt', { session: false }), roleAdmin_1.adminCheck, admin_1.default); // Mounts the route as middleware
 //mainRouter.use('/admin', adminRouter) // Mounts the route as middleware
-mainRouter.use('/' + enums_1.userInterfaceTypes.CUSTOMER, user_1.default);
+mainRouter.use('/' + enums_1.userInterfaceTypes.CUSTOMER, passport_1.default.authenticate('jwt', { session: false }), roleAdmin_1.customerCheck, user_1.default);
 mainRouter.use('/' + enums_1.userInterfaceTypes.SUPPLIER, passport_1.default.authenticate('jwt', { session: false }), roleAdmin_1.electricitySupplierCheck, electricity_supplier_1.default);
 mainRouter.use('/user-interface', user_interface_1.default);
 mainRouter.get('/*', (req, res) => {

@@ -36,6 +36,12 @@ exports.signUp = (req, res, next) => __awaiter(void 0, void 0, void 0, function*
                         user: newUser
                     });
                 }
+                else {
+                    res.status(400).json({
+                        message: 'Could not make user',
+                        user: newUser
+                    });
+                }
             }
             else if (req.body.role == 'admin') {
                 const newUser = new Admin_1.default({ firstName: req.body.firstName, lastName: req.body.lastName, email: email, password: userObj[1] });

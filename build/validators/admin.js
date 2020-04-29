@@ -42,14 +42,24 @@ exports.avgSpending = express_validator_1.checkSchema({
     id: {
         in: ['params'],
         isInt: true,
-        errorMessage: "meterId needs to be of type int",
+        errorMessage: "meterId needs to be of type int.",
         custom: {
             options: (val) => __awaiter(void 0, void 0, void 0, function* () {
                 if ((yield User_1.default.count({ where: { id: val } })) === 0)
                     return Promise.reject();
             }),
-            errorMessage: 'The provided id does not match any meter'
+            errorMessage: 'The provided id does not match any user'
         }
     },
+    startDate: {
+        in: ['query'],
+        isISO8601: true,
+        errorMessage: "startDate needs to be of type date: yyyy-mm-dd",
+    },
+    endDate: {
+        in: ['query'],
+        isISO8601: true,
+        errorMessage: "endDate needs to be of type date: yyyy-mm-dd"
+    }
 });
 //# sourceMappingURL=admin.js.map

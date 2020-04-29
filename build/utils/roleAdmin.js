@@ -13,6 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Admin_1 = __importDefault(require("../models/Admin"));
+const ElectricitySupplier_1 = __importDefault(require("../models/ElectricitySupplier"));
+const User_1 = __importDefault(require("../models/User"));
 exports.adminCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.user != null) {
         const userObj = Object.values(req.user);
@@ -32,11 +34,31 @@ exports.adminCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, funct
 exports.electricitySupplierCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     if (req.user != null) {
         const userObj = Object.values(req.user);
-        const role = userObj[userObj.length - 1];
-        if (role != "electricity supplier") {
+        const esId = userObj[0];
+        const esMail = userObj[1];
+        const esUser = yield ElectricitySupplier_1.default.count({ where: { id: esId, email: esMail } });
+        if (esUser === 0) {
             res.status(400).json({ success: false, message: "Only the electricity supplier has access to this endpoint " });
         }
         else {
+            req.body.id = esId;
+            req.body.email = esMail;
+            next();
+        }
+    }
+});
+exports.customerCheck = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+    if (req.user != null) {
+        const userObj = Object.values(req.user);
+        const customerId = userObj[0];
+        const customerMail = userObj[1];
+        const customerUser = yield User_1.default.count({ where: { id: customerId, email: customerMail } });
+        if (customerUser === 0) {
+            res.status(400).json({ success: false, message: "Only the customers supplier has access to this endpoint " });
+        }
+        else {
+            req.body.id = customerId;
+            req.body.email = customerMail;
             next();
         }
     }
