@@ -114,40 +114,41 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
 
 export const avgSpending = async (req:Request, res:Response, next: NextFunction) : Promise<void> => {
     try{
-            let customersSpending : any[] =[]
-            const user = await User.findAll({})
+
+        const valError = validationResult(req)
+        if (valError.isEmpty()){
+
+            const user = await User.findOne({where:{id: req.params.id, adminId: req.body.id}})
             if (user){
                 const startDate : any = new Date(req.query.startDate.toString())
                 const endDate : any = new Date(req.query.endDate.toString())
+                const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
+                if (smartMeterSamples.length != 0){
+                    let totalWh : number = 0
+                    let KWhPrice : number = 2.25
+                    let noOfSamples : number = 0
 
-                for (let i = 0; i < user.length; i++) {
-                    let smartMeterSamples = await SmartMeterSample.findAll({
-                        where: {
-                            meterId: user[i].meterId,
-                            date: {[Op.between]: [startDate, endDate]}
-                        }
+                    smartMeterSamples.forEach(val =>{
+                        totalWh += val.wattsPerHour
+                        noOfSamples ++
                     })
-                    if (smartMeterSamples.length != 0) {
-                        let totalWh: number = 0
-                        let KWhPrice: number = 2.25
-                        let noOfSamples: number = 0
 
-                        smartMeterSamples.forEach(val => {
-                            totalWh += val.wattsPerHour
-                            noOfSamples++
-                        })
+                    const avgKWh = (totalWh / noOfSamples) / 1000
+                    const totalSpending = (totalWh / 1000) * KWhPrice
 
-                        const avgKWh = (totalWh / noOfSamples) / 1000
-                        const totalSpending = (totalWh / 1000) * KWhPrice
-
-                        customersSpending.push({id: user[i].id, avgKWh: avgKWh, totalSpending: totalSpending})
-                    }
+                    res.status(200).json({success: true, result: {avgKWh: avgKWh, totalSpending: totalSpending}})
+                } else {
+                    const smsStart = await SmartMeterSample.findOne({attributes:[[sequelize.fn('min',sequelize.col('date')),'min']]})
+                    const smsEnd = await SmartMeterSample.findOne({attributes:[[sequelize.fn('max',sequelize.col('date')),'max']]})
+                    res.status(400).json({ err: 'no samples found within the provided date range', samplePeriod: {first: smsStart, last: smsEnd}})
                 }
-
-                    res.status(200).json({success: true, result: customersSpending})
             } else {
                 res.status(400).json({ err: 'no user with the given id belongs to this admin profile'})
             }
+        } else {
+            res.status(400).json({ err: valError})
+        }
+
 
     } catch (e) {
         next(new Error('Error! Could not return ranking'))
