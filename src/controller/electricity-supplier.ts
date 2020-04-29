@@ -4,6 +4,7 @@ import {train, predictFuture,LSTMmodel} from "../utils/LSTM-model";
 import {validationResult} from "express-validator";
 import User from "../models/User";
 import Admin from "../models/Admin";
+import sequelize, {Op} from "sequelize";
 
 export const getAdminsAndUsers = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {
@@ -77,4 +78,34 @@ export const getPredictions = async (req:Request,res:Response, next:NextFunction
         next(new Error('Error! Could not generate predictions'))
     }
 
+}
+
+export const ReturnSamples = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
+    try {
+        const valError = validationResult(req)
+        if (valError.isEmpty()){
+            console.log(req.body)
+            const user = await User.findOne({where:{id: req.params.id}})
+            if (user){
+                const startDate : any = new Date(req.query.startDate.toString())
+                const endDate : any = new Date(req.query.endDate.toString())
+                const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
+                if (smartMeterSamples.length != 0){
+                    res.status(200).json({success: true, result: {smartMeterSamples}})
+                } else {
+                    const smsStart = await SmartMeterSample.findOne({attributes:[[sequelize.fn('min',sequelize.col('date')),'min']]})
+                    const smsEnd = await SmartMeterSample.findOne({attributes:[[sequelize.fn('max',sequelize.col('date')),'max']]})
+                    res.status(400).json({ err: 'no samples found within the provided date range', samplePeriod: {first: smsStart, last: smsEnd}})
+                }
+            } else {
+                res.status(400).json({ err: 'no user was found'})
+
+            }
+
+        } else{
+            res.status(400).json({ err: valError})
+        }
+    } catch (e) {
+        next(new Error('Error! Could not return sample data'))
+    }
 }
