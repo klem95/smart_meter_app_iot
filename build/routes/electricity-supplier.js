@@ -9,7 +9,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const electricitySupplier = __importStar(require("../controller/electricity-supplier"));
+const esValidators = __importStar(require("../validators/es"));
 const electricitySupplierRouter = express_1.Router();
-electricitySupplierRouter.get('/generateModel', electricitySupplier.generateModel);
+electricitySupplierRouter.get('/generateModel', esValidators.generateModel, electricitySupplier.generateModel);
+electricitySupplierRouter.get('/predict', esValidators.generateModel, electricitySupplier.getPredictions);
 exports.default = electricitySupplierRouter;
 //# sourceMappingURL=electricity-supplier.js.map
