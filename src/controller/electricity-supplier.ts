@@ -118,7 +118,7 @@ export const avgSpending = async (req:Request, res:Response, next: NextFunction)
         const valError = validationResult(req)
         if (valError.isEmpty()){
 
-            const user = await User.findOne({where:{id: req.params.id, adminId: req.body.id}})
+            const user = await User.findOne({where:{id: req.params.id}})
             if (user){
                 const startDate : any = new Date(req.query.startDate.toString())
                 const endDate : any = new Date(req.query.endDate.toString())
