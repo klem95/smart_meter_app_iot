@@ -3,6 +3,32 @@ import SmartMeterSample from "../models/Smart-meter-sample";
 import {train, predictFuture,LSTMmodel} from "../utils/LSTM-model";
 import {validationResult} from "express-validator";
 import User from "../models/User";
+import Admin from "../models/Admin";
+
+export const getAdminsAndUsers = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
+    try {
+        const admins = await Admin.findAll()
+        let users : User [] = []
+
+        if (admins.length > 0) {
+            for (let i = 0; i < admins.length; i++){
+                const adminId = admins[i].id
+                const _users = await User.findAll({where:{adminId:adminId}})
+                _users.forEach(value => {
+                    users.push(value)
+                })
+                res.status(200).json({success:true,result:{admins: admins, users:users}})
+            }
+        } else{
+            res.status(400).json({message:'no admins were found'})
+        }
+
+
+    } catch (e) {
+        next(new Error('Error! Could not retrive admins and users'))
+    }
+}
+
 
 export const generateModel = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {

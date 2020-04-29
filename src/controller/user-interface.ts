@@ -64,9 +64,7 @@ export const signUp = async (req:Request, res: Response, next:NextFunction) : Pr
 export const login = async (req:Request, res:Response, next:NextFunction) : Promise<void> =>{
     try{
         passport.authenticate(req.body.signAs +'-login', async (err, user, info) => {
-            console.log("login")
-            console.log(err)
-            console.log(user)
+
             try {
                 if(err || !user){
                     res.status(400).json({ message: "No user was found"})

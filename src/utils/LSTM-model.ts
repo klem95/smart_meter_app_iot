@@ -144,6 +144,9 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
     let inpsf : any = [inputs[inputs.length -2]];
 
     let hoursToPredict = 24;
+    let stringDay = (day < 10) ? "0"+day.toString() : day.toString() ;
+    let stringMonth = (month < 10) ? "0"+month.toString() : month.toString() ;
+
 
     for(let i = 0; i < hoursToPredict; i++){
         let fValue : any = await predict(inpsf, LSTMmodel);
@@ -154,9 +157,11 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
         inpsf[0].push(fValue);
 
         if(i < 10)
-            nextDay.push( year +"-"+month + "-"+ day +"T0" +i +":00:00.000Z");
+            nextDay.push( year +"-"+stringMonth + "-"+ stringDay +"T0" +i +":00:00.000Z");
+
         else
-            nextDay.push( year +"-"+month+ "-" + day +"T" + i +":00:00.000Z");
+            nextDay.push( year +"-"+stringMonth+ "-" + stringDay +"T" + i +":00:00.000Z");
+
     }
 
     let average = [];
