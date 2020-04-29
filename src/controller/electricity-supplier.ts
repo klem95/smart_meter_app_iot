@@ -14,7 +14,7 @@ export const getAdminsAndUsers = async (req:Request,res:Response, next:NextFunct
         if (admins.length > 0) {
             for (let i = 0; i < admins.length; i++){
                 const adminId = admins[i].id
-                const _users = await User.findAll({where:{adminId:adminId}})
+                let _users = await User.findAll({where:{adminId:adminId}})
                 _users.forEach(value => {
                     users.push(value)
                 })
