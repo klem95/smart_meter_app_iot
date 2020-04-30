@@ -17,7 +17,7 @@ let resultdata : any = [];
 export let modelTraining : boolean = false
 
 
-export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rate:number,_n_hl:number, _window_size:number) : Promise<void> => {
+export const train = async ( _n_epochs:number,_lr_rate:number,_n_hl:number, _window_size:number) : Promise<void> => {
     console.log('Training model')
     const n_epochs = _n_epochs
     const lr_rate = _lr_rate

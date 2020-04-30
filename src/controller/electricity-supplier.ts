@@ -45,9 +45,8 @@ export const generateModel = async (req:Request,res:Response, next:NextFunction)
                 const hiddenLayers : number = parseInt(req.query.hiddenLayers.toString())
                 const windowSize : number = parseInt(req.query.windowSize.toString())
                 const meterId : number = parseInt(req.query.meterId.toString())
-                const waterSamples = await SmartMeterSample.findAll({where:{meterId:meterId}})
 
-                const result = await train(waterSamples,epochsNo,learningRate,hiddenLayers,windowSize)
+                const result = await train(epochsNo,learningRate,hiddenLayers,windowSize)
                 res.status(200).json({success: true, result: "Model is trained"})
             } else {
                 res.status(503).json({message: "Model is already being trained. Please wait..."})
