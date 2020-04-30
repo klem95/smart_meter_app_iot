@@ -13,7 +13,7 @@ const index_1 = require("../index");
 const tf = require('@tensorflow/tfjs-node');
 let result;
 let SMA;
-const n_items = 47;
+const n_items = 1000;
 let data_raw = [];
 let window_size;
 let resultdata = [];
@@ -22,10 +22,13 @@ exports.train = (dataSet, _n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter
     const n_epochs = _n_epochs;
     const lr_rate = _lr_rate;
     const n_hl = _n_hl;
-    const size = 50;
+    const size = 80;
     window_size = _window_size;
-    data_raw = yield convertData(dataSet);
-    SMA = yield computeSMA(dataSet, window_size);
+    const tdata_raw = yield convertData(dataSet);
+    data_raw = GenerateDataset(n_items);
+    SMA = yield computeSMA(data_raw, window_size);
+    console.log(tdata_raw.length);
+    console.log(data_raw.length);
     let inputs = SMA.map(function (inp_f) {
         return inp_f['set'].map(function (val) {
             return val['wattsPerHour'];
@@ -87,15 +90,21 @@ const trainModel = (inputs, outputs, size, window_size, n_epochs, learning_rate,
     return { model: model, stats: hist };
 });
 exports.predictFuture = (dataSet) => __awaiter(void 0, void 0, void 0, function* () {
-    data_raw = yield convertData(dataSet);
-    const _SMA = yield computeSMA(dataSet, window_size);
+    // data_raw = await convertData(dataSet)
+    data_raw = GenerateDataset(n_items);
+    const _SMA = yield computeSMA(data_raw, window_size);
     let inputs = _SMA.map(function (inp_f) {
         return inp_f['set'].map(function (val) { return val['wattsPerHour']; });
     });
-    let outputs = _SMA.map(function (outp_f) { return outp_f['avg']; });
-    let outps = outputs.slice(Math.floor(n_items / 100 * outputs.length), outputs.length);
     let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
-    let pred_vals = makePredictions(inputs, n_items, result['model']);
+    let known_pred_vals = makePredictions(inps, n_items, result['model']); // a list of prediction from length-n_items to the last sample
+    let inpsf = [inputs[inputs.length - 1].slice(0)].slice(0);
+    let future_prediction_vals = makePredictions(inpsf, n_items, result['model']);
+    let timestamps_a = data_raw.map(function (val) { return val['timestamp']; });
+    let timestamps_b = data_raw.map(function (val) {
+        return val['timestamp'];
+    }).splice(window_size, data_raw.length);
+    return { inputs: inputs, inps: inps, known_pred_vals: known_pred_vals };
     /*
   let pred_vals = await predict(inps, LSTMmodel);
 
@@ -182,9 +191,10 @@ const predict = async (inps:any,model:any) : Promise <any> => {
 
  */
 function makePredictions(inputs, size, model) {
-    let X = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
-    const predictedResults = model.predict(tf.tensor2d(X, [X.length, X[0].length]).div(tf.scalar(10))).mul(10);
-    return Array.from(predictedResults.dataSync());
+    var inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
+    const outps = model.predict(tf.tensor2d(inps, [inps.length,
+        inps[0].length]).div(tf.scalar(10))).mul(10);
+    return Array.from(outps.dataSync());
 }
 const convertData = (input) => __awaiter(void 0, void 0, void 0, function* () {
     let dataset = [];
@@ -193,4 +203,24 @@ const convertData = (input) => __awaiter(void 0, void 0, void 0, function* () {
     }
     return dataset;
 });
+function GenerateDataset(size) {
+    var dataset = [];
+    var dt1 = new Date(), dt2 = new Date();
+    dt1.setDate(dt1.getDate() - 1);
+    dt2.setDate(dt2.getDate() - size);
+    var time_start = dt2.getTime();
+    var time_diff = new Date().getTime() - dt1.getTime();
+    let curr_time = time_start;
+    for (let i = 0; i < size; i++, curr_time += time_diff) {
+        var curr_dt = new Date(curr_time);
+        var hours = Math.floor(Math.random() * 100 % 24);
+        var minutes = Math.floor(Math.random() * 100 % 60);
+        var seconds = Math.floor(Math.random() * 100 % 60);
+        dataset.push({ id: i + 1, wattsPerHour: (Math.floor(Math.random() * 10) + 5) + Math.random(),
+            timestamp: curr_dt.getFullYear() + "-" + ((curr_dt.getMonth() > 9) ? curr_dt.getMonth() : ("0" + curr_dt.getMonth())) + "-" +
+                ((curr_dt.getDate() > 9) ? curr_dt.getDate() : ("0" + curr_dt.getDate())) + " [" + ((hours > 9) ? hours : ("0" + hours)) +
+                ":" + ((minutes > 9) ? minutes : ("0" + minutes)) + ":" + ((seconds > 9) ? seconds : ("0" + seconds)) + "]" });
+    }
+    return dataset;
+}
 //# sourceMappingURL=LSTM-model.js.map
