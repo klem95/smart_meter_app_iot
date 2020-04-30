@@ -19,6 +19,7 @@ const app = express()
 const server = app.listen(port, async () : Promise<void> =>  {
     try {
         await sequelize.sync()
+
         console.log(`Server listening on port ${port}`);
     } catch (e) {
         console.log('ERROR! Crashed at startup..')

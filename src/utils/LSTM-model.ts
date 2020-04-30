@@ -14,6 +14,7 @@ let n_items : number = 80
 let data_raw : Array<any> = []
 let window_size : number
 let resultdata : any = [];
+export let modelTraining : boolean = false
 
 
 export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rate:number,_n_hl:number, _window_size:number) : Promise<void> => {
@@ -23,15 +24,11 @@ export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rat
     const n_hl = _n_hl
     const size = 80
 
-
-
-
-
     window_size = _window_size
 
     const avg = await returnAvg()
 
-
+    modelTraining = true
 
      data_raw = await convertData(avg)
 
@@ -54,12 +51,15 @@ export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rat
         //console.log(test)
         console.log("Epoch:"+ (epoch + 1) + " Loss: " + log.loss);
         console.log(((epoch + 1) * (100 / n_epochs)).toString() + "%");
+
+
     }
 
     result = await trainModel(inputs, outputs,
         n_items, window_size, n_epochs, lr_rate, n_hl, callback);
 
     LSTMmodel = result['model'];
+    modelTraining = false
     console.log('Model trained')
 }
 

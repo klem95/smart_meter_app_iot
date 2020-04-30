@@ -6,6 +6,7 @@ import User from "../models/User";
 import Admin from "../models/Admin";
 import sequelize, {Op} from "sequelize";
 import {convertTime} from "../utils/timeConverter";
+import {modelTraining} from "../utils/LSTM-model";
 
 export const getAdminsAndUsers = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {
@@ -37,16 +38,20 @@ export const getAdminsAndUsers = async (req:Request,res:Response, next:NextFunct
 export const generateModel = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {
         const valError = validationResult(req)
-        if (valError.isEmpty()){
-            const epochsNo : number = parseInt(req.query.epochsNo.toString())
-            const learningRate : number = parseFloat(req.query.learningRate.toString())
-            const hiddenLayers : number = parseInt(req.query.hiddenLayers.toString())
-            const windowSize : number = parseInt(req.query.windowSize.toString())
-            const meterId : number = parseInt(req.query.meterId.toString())
-            const waterSamples = await SmartMeterSample.findAll({where:{meterId:meterId}})
+        if (valError.isEmpty() ){
+            if (!modelTraining){
+                const epochsNo : number = parseInt(req.query.epochsNo.toString())
+                const learningRate : number = parseFloat(req.query.learningRate.toString())
+                const hiddenLayers : number = parseInt(req.query.hiddenLayers.toString())
+                const windowSize : number = parseInt(req.query.windowSize.toString())
+                const meterId : number = parseInt(req.query.meterId.toString())
+                const waterSamples = await SmartMeterSample.findAll({where:{meterId:meterId}})
 
-            const result = await train(waterSamples,epochsNo,learningRate,hiddenLayers,windowSize)
-            res.status(200).json({success: true, result: "Model is trained"})
+                const result = await train(waterSamples,epochsNo,learningRate,hiddenLayers,windowSize)
+                res.status(200).json({success: true, result: "Model is trained"})
+            } else {
+                res.status(503).json({message: "Model is already being trained. Please wait..."})
+            }
         } else {
             res.status(400).json({error: valError})
         }
