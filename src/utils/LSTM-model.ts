@@ -30,17 +30,14 @@ export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rat
     window_size = _window_size
 
     const avg = await returnAvg()
-    console.log("//////////////avg /////////////////")
-    console.log(avg.length)
+
 
 
      data_raw = await convertData(avg)
-    console.log("//////////////data_raw /////////////////")
-    console.log(data_raw.length)
+
     //data_raw = GenerateDataset(n_items);
     SMA = await computeSMA(data_raw,window_size)
-    console.log("//////////////SMA /////////////////")
-    console.log(SMA.length)
+
 
    // console.log(tdata_raw.length)
    // console.log(data_raw.length)
@@ -133,26 +130,18 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
 
 export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> => {
      data_raw = await convertData(dataSet)
-    console.log("//////////////dataSet /////////////////")
-    console.log(data_raw.length)
+
     //data_raw = GenerateDataset(n_items);
     const _SMA = await computeSMA(data_raw,window_size)
-    console.log("//////////////_SMA /////////////////")
-    console.log(_SMA.length)
+
 
     let inputs = _SMA.map(function(inp_f:any) {
         return inp_f['set'].map(function (val:any) { return val['wattsPerHour']; }); });
 
-    console.log("//////////////inputs /////////////////")
-    console.log(inputs.length)
-    console.log("////////////// n_items before ored/////////////////")
-    console.log(n_items)
+
 
     let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
-    console.log("////////////// inps call /////////////////")
-    console.log(inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length))
-    console.log("//////////////inps /////////////////")
-    console.log(inps.length)
+
     let known_pred_vals = makePredictions(inps, n_items, result['model']); // a list of prediction from length-n_items to the last sample
 
 
@@ -170,11 +159,8 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
 
 function makePredictions(inputs:any, size:number, model:any)
 {
-    console.log("//////////////inputs f /////////////////")
-    console.log(inputs.length)
+
     var inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
-    console.log("//////////////inps f /////////////////")
-    console.log(inps.length)
     const outps = model.predict(tf.tensor2d(inps, [inps.length,
         inps[0].length]).div(tf.scalar(10))).mul(10);
 
@@ -184,13 +170,9 @@ function makePredictions(inputs:any, size:number, model:any)
 const returnAvg = async () : Promise <SmartMeterSample[]> =>{
     const users = await User.findAll()
     let avgWt  = await SmartMeterSample.findAll({where:{meterId: users[0].meterId}})
-    console.log("user" + users.length)
-    console.log("avgWt" + avgWt.length)
 
-    console.log("n_items" + n_items)
     for (let i = 1; i < users.length; i++){
         let sample = await SmartMeterSample.findAll({where:{meterId: users[i].meterId}})
-        console.log("sample" + sample.length)
         for (let j = 0; j > sample.length; j++){
             avgWt[j].wattsPerHour += sample[j].wattsPerHour
         }
