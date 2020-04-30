@@ -14,8 +14,8 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
             if (user){
                 let startDate : any = new Date(req.query.startDate.toString())
                 let endDate : any = new Date(req.query.endDate.toString())
-                startDate = convertTime(startDate,false)
-                endDate = convertTime(endDate,true)
+                startDate = await convertTime(startDate,false)
+                endDate = await convertTime(endDate,true)
                 const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
                 if (smartMeterSamples.length != 0){
                     res.status(200).json({success: true, result: {smartMeterSamples}})
@@ -46,8 +46,10 @@ export const avgSpending = async (req:Request, res:Response, next: NextFunction)
 
             const user = await User.findOne({where: {id: req.body.id}})
             if (user) {
-                const startDate: any = new Date(req.query.startDate.toString())
-                const endDate: any = new Date(req.query.endDate.toString())
+                let startDate: any = new Date(req.query.startDate.toString())
+                let endDate: any = new Date(req.query.endDate.toString())
+                startDate = await convertTime(startDate,false)
+                endDate = await convertTime(endDate,true)
                 const smartMeterSamples = await SmartMeterSample.findAll({
                     where: {
                         meterId: user.meterId,

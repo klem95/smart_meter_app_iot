@@ -38,8 +38,9 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
             if (user){
                 let startDate : any = new Date(req.query.startDate.toString())
                 let endDate : any = new Date(req.query.endDate.toString())
-                startDate = convertTime(startDate,false)
-                endDate = convertTime(endDate,true)
+                startDate = await convertTime(startDate,false)
+                endDate = await convertTime(endDate,true)
+                console.log(startDate)
 
                 const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
                 if (smartMeterSamples.length != 0){
@@ -58,6 +59,7 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
             res.status(400).json({ err: valError})
         }
     } catch (e) {
+        //console.log(e)
         next(new Error('Error! Could not return sample data'))
     }
 }
@@ -70,8 +72,10 @@ export const avgSpending = async (req:Request, res:Response, next: NextFunction)
 
             const user = await User.findOne({where:{id: req.params.id, adminId: req.body.id}})
             if (user){
-                const startDate : any = new Date(req.query.startDate.toString())
-                const endDate : any = new Date(req.query.endDate.toString())
+                let startDate : any = new Date(req.query.startDate.toString())
+                let endDate : any = new Date(req.query.endDate.toString())
+                startDate = await convertTime(startDate,false)
+                endDate = await convertTime(endDate,true)
                 const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
                 if (smartMeterSamples.length != 0){
                     let totalWh : number = 0
