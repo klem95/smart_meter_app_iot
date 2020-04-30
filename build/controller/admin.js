@@ -22,6 +22,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
 const sequelize_1 = __importStar(require("sequelize"));
+const timeConverter_1 = require("../utils/timeConverter");
 const User_1 = __importDefault(require("../models/User"));
 exports.cronePing = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json({ success: true });
@@ -53,8 +54,11 @@ exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             console.log(req.body);
             const user = yield User_1.default.findOne({ where: { id: req.params.id, adminId: req.body.id } });
             if (user) {
-                const startDate = new Date(req.query.startDate.toString());
-                const endDate = new Date(req.query.endDate.toString());
+                let startDate = new Date(req.query.startDate.toString());
+                let endDate = new Date(req.query.endDate.toString());
+                startDate = yield timeConverter_1.convertTime(startDate, false);
+                endDate = yield timeConverter_1.convertTime(endDate, true);
+                console.log(startDate);
                 const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: user.meterId, date: { [sequelize_1.Op.between]: [startDate, endDate] } } });
                 if (smartMeterSamples.length != 0) {
                     res.status(200).json({ success: true, result: { smartMeterSamples } });
@@ -74,6 +78,7 @@ exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
         }
     }
     catch (e) {
+        //console.log(e)
         next(new Error('Error! Could not return sample data'));
     }
 });
@@ -83,8 +88,10 @@ exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         if (valError.isEmpty()) {
             const user = yield User_1.default.findOne({ where: { id: req.params.id, adminId: req.body.id } });
             if (user) {
-                const startDate = new Date(req.query.startDate.toString());
-                const endDate = new Date(req.query.endDate.toString());
+                let startDate = new Date(req.query.startDate.toString());
+                let endDate = new Date(req.query.endDate.toString());
+                startDate = yield timeConverter_1.convertTime(startDate, false);
+                endDate = yield timeConverter_1.convertTime(endDate, true);
                 const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: user.meterId, date: { [sequelize_1.Op.between]: [startDate, endDate] } } });
                 if (smartMeterSamples.length != 0) {
                     let totalWh = 0;

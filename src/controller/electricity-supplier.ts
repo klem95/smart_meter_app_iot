@@ -78,7 +78,7 @@ export const getPredictions = async (req:Request,res:Response, next:NextFunction
         }
     }catch (e) {
         console.log(e)
-        next(new Error('Error! Could not generate predictions'))
+        res.status(400).json({error: e})
     }
 
 }

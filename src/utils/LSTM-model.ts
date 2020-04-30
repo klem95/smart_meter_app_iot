@@ -2,6 +2,8 @@
 import SmartMeterSample from "../models/Smart-meter-sample";
 import {io} from '../index'
 import {convertTime} from "./timeConverter";
+import sequelize from "sequelize";
+import User from "../models/User";
 
 const tf = require('@tensorflow/tfjs-node')
 
@@ -147,7 +149,6 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
 function makePredictions(inputs:any, size:number, model:any)
 {
     var inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
-    console.log(inps)
     const outps = model.predict(tf.tensor2d(inps, [inps.length,
         inps[0].length]).div(tf.scalar(10))).mul(10);
 
@@ -155,16 +156,23 @@ function makePredictions(inputs:any, size:number, model:any)
 }
 
 const returnAvg = async () : Promise <SmartMeterSample[]> =>{
-    const smart0 = await SmartMeterSample.findAll({where: {meterId: 0}})
-    const smart1 = await SmartMeterSample.findAll({where: {meterId: 1}})
-    const smart2 = await SmartMeterSample.findAll({where: {meterId: 2}})
-    const smart3 = await SmartMeterSample.findAll({where: {meterId: 3}})
+    const users = await User.findAll()
+    let avgWt  = await SmartMeterSample.findAll({where:{meterId: users[0].meterId}})
 
-    for (let i = 0; i > smart0.length; i++){
-        smart0[i].wattsPerHour = (smart0[i].wattsPerHour + smart1[i].wattsPerHour +smart2[i].wattsPerHour+smart3[i].wattsPerHour) /4
+    for (let i = 1; i > users.length; i++){
+        let sample = await SmartMeterSample.findAll({where:{meterId: users[i].meterId}})
+        for (let j = 0; j > sample.length; j++){
+            avgWt[j].wattsPerHour += sample[j].wattsPerHour
+        }
+
     }
 
-    return smart0
+
+    for (let i = 0; i > avgWt.length; i++){
+        avgWt[i].wattsPerHour = avgWt[i].wattsPerHour /users.length
+    }
+
+    return avgWt
 }
 
 const convertData = async (inputData:SmartMeterSample[]) : Promise <any> =>{

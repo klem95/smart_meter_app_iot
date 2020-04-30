@@ -8,12 +8,19 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
 const index_1 = require("../index");
+const timeConverter_1 = require("./timeConverter");
+const sequelize_1 = __importDefault(require("sequelize"));
+const User_1 = __importDefault(require("../models/User"));
 const tf = require('@tensorflow/tfjs-node');
 let result;
 let SMA;
-const n_items = 1000;
+let n_items;
 let data_raw = [];
 let window_size;
 let resultdata = [];
@@ -23,12 +30,13 @@ exports.train = (dataSet, _n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter
     const lr_rate = _lr_rate;
     const n_hl = _n_hl;
     const size = 80;
+    n_items = dataSet.length;
     window_size = _window_size;
-    const tdata_raw = yield convertData(dataSet);
-    data_raw = GenerateDataset(n_items);
+    data_raw = yield convertData(yield returnAvg());
+    //data_raw = GenerateDataset(n_items);
     SMA = yield computeSMA(data_raw, window_size);
-    console.log(tdata_raw.length);
-    console.log(data_raw.length);
+    // console.log(tdata_raw.length)
+    // console.log(data_raw.length)
     let inputs = SMA.map(function (inp_f) {
         return inp_f['set'].map(function (val) {
             return val['wattsPerHour'];
@@ -90,8 +98,8 @@ const trainModel = (inputs, outputs, size, window_size, n_epochs, learning_rate,
     return { model: model, stats: hist };
 });
 exports.predictFuture = (dataSet) => __awaiter(void 0, void 0, void 0, function* () {
-    // data_raw = await convertData(dataSet)
-    data_raw = GenerateDataset(n_items);
+    data_raw = yield convertData(dataSet);
+    //data_raw = GenerateDataset(n_items);
     const _SMA = yield computeSMA(data_raw, window_size);
     let inputs = _SMA.map(function (inp_f) {
         return inp_f['set'].map(function (val) { return val['wattsPerHour']; });
@@ -105,101 +113,34 @@ exports.predictFuture = (dataSet) => __awaiter(void 0, void 0, void 0, function*
         return val['timestamp'];
     }).splice(window_size, data_raw.length);
     return { inputs: inputs, inps: inps, known_pred_vals: known_pred_vals };
-    /*
-  let pred_vals = await predict(inps, LSTMmodel);
-
-
-  let timestamps_a = data_raw.map(function (val:any) { return val['timestamp']; });
-  let timestamps_b = data_raw.map(function (val:any) {
-      return val['timestamp']; }).splice(window_size, data_raw.length);
-
-  let timestamps_c = data_raw.map(function (val:any) {
-      return val['timestamp']; }).splice(window_size + Math.floor(n_items / 100 * outputs.length), data_raw.length);
-
-  let sma = _SMA.map(function (val:any) { return val['avg']; });
-  let prices = data_raw.map(function (val:any) { return val['wattsPerHour']; });
-
-  let futureValues = [];
-  let futureTimeStamps = [];
-  let nextDay = [];
-  let lastStamp = timestamps_a[timestamps_a.length-1];
-
-  let mydate = new Date(lastStamp);
-  let month = mydate.getMonth();
-  let day = mydate.getDate();
-  let year = mydate.getFullYear();
-  let inpsf : any = [inputs[inputs.length -2]];
-
-  let hoursToPredict = 24;
-  let stringDay = (day < 10) ? "0"+day.toString() : day.toString() ;
-  let stringMonth = (month < 10) ? "0"+month.toString() : month.toString() ;
-
-
-  for(let i = 0; i < window_size; i++){
-      let fValue : any = await predict(inpsf, LSTMmodel);
-      fValue = fValue[0]
-      futureValues.push(fValue);
-      inpsf[0].shift();
-
-      inpsf[0].push(fValue);
-
-      if(i < 10)
-          nextDay.push( year +"-"+stringMonth + "-"+ stringDay +"T0" +i +":00:00.000Z");
-
-      else
-          nextDay.push( year +"-"+stringMonth+ "-" + stringDay +"T" + i +":00:00.000Z");
-
-  }
-
-  let average = [];
-  for (let i = 0; i < 24; i++){
-      let inneravg = 0;
-      for(let k = 0; k < ((prices.length)/24); k++){
-          inneravg += prices[i+ k*24]
-      }
-      average.push(inneravg / ((prices.length)/24));
-  }
-
-  var averageAll = [];
-  let avgSum = 0;
-
-  for(let j = 0; j<prices.length; j++){
-      avgSum += prices[j];
-  }
-  avgSum = avgSum / prices.length;
-
-  for(let y = 0; y <(timestamps_a.length+nextDay.length-1)  ; y++){
-      averageAll.push(avgSum);
-  }
-
-  let avgsumTimeLabel = [...timestamps_a, ...nextDay];
-
-  return {og_pred: pred_vals,initial_timestamps: timestamps_a,
-      initial_wH: prices, moving_avg_timestamps: timestamps_b,
-      SMA: sma, next_day_timestamps: nextDay, prediction: futureValues,
-      combined_avg_Wh: average, avg_timestamps: avgsumTimeLabel, total_Wh_avg: averageAll
-  }
-
-   */
 });
-/*
-const predict = async (inps:any,model:any) : Promise <any> => {
-    const outps = model.predict(tf.tensor2d(inps, [inps.length,
-        inps[0].length]).div(tf.scalar(10))).mul(10);
-    return Array.from(outps.dataSync());
-}
-
- */
 function makePredictions(inputs, size, model) {
     var inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
     const outps = model.predict(tf.tensor2d(inps, [inps.length,
         inps[0].length]).div(tf.scalar(10))).mul(10);
     return Array.from(outps.dataSync());
 }
-const convertData = (input) => __awaiter(void 0, void 0, void 0, function* () {
+const returnAvg = () => __awaiter(void 0, void 0, void 0, function* () {
+    const smart0 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 0 } });
+    const smart1 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 1 } });
+    const smart2 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 2 } });
+    const smart3 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 3 } });
+    const { count, rows } = yield User_1.default.findAndCountAll({
+        attributes: [
+            [sequelize_1.default.fn('DISTINCT', sequelize_1.default.col('meterId')), 'meterId'],
+        ],
+    });
+    console.log(rows);
+    for (let i = 0; i > smart0.length; i++) {
+        smart0[i].wattsPerHour = (smart0[i].wattsPerHour + smart1[i].wattsPerHour + smart2[i].wattsPerHour + smart3[i].wattsPerHour) / 4;
+    }
+    return smart0;
+});
+const convertData = (inputData) => __awaiter(void 0, void 0, void 0, function* () {
     let dataset = [];
-    for (let i = 0; i < input.length - 1; i++) {
-        dataset.push({ id: input[i].id, wattsPerHour: input[i].wattsPerHour, timestamp: input[i].date });
+    for (let i = 0; i < inputData.length - 1; i++) {
+        let convertedTime = yield timeConverter_1.convertTime(inputData[i].date, false);
+        dataset.push({ id: inputData[i].id, wattsPerHour: inputData[i].wattsPerHour, timestamp: convertedTime });
     }
     return dataset;
 });

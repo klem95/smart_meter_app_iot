@@ -23,6 +23,7 @@ const express_validator_1 = require("express-validator");
 const User_1 = __importDefault(require("../models/User"));
 const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
 const sequelize_1 = __importStar(require("sequelize"));
+const timeConverter_1 = require("../utils/timeConverter");
 exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const valError = express_validator_1.validationResult(req);
@@ -30,8 +31,10 @@ exports.ReturnSamples = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
             console.log(req.body);
             const user = yield User_1.default.findOne({ where: { id: req.body.id } });
             if (user) {
-                const startDate = new Date(req.query.startDate.toString());
-                const endDate = new Date(req.query.endDate.toString());
+                let startDate = new Date(req.query.startDate.toString());
+                let endDate = new Date(req.query.endDate.toString());
+                startDate = yield timeConverter_1.convertTime(startDate, false);
+                endDate = yield timeConverter_1.convertTime(endDate, true);
                 const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: user.meterId, date: { [sequelize_1.Op.between]: [startDate, endDate] } } });
                 if (smartMeterSamples.length != 0) {
                     res.status(200).json({ success: true, result: { smartMeterSamples } });
@@ -61,8 +64,10 @@ exports.avgSpending = (req, res, next) => __awaiter(void 0, void 0, void 0, func
         if (valError.isEmpty()) {
             const user = yield User_1.default.findOne({ where: { id: req.body.id } });
             if (user) {
-                const startDate = new Date(req.query.startDate.toString());
-                const endDate = new Date(req.query.endDate.toString());
+                let startDate = new Date(req.query.startDate.toString());
+                let endDate = new Date(req.query.endDate.toString());
+                startDate = yield timeConverter_1.convertTime(startDate, false);
+                endDate = yield timeConverter_1.convertTime(endDate, true);
                 const smartMeterSamples = yield Smart_meter_sample_1.default.findAll({
                     where: {
                         meterId: user.meterId,
