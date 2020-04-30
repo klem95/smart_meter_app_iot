@@ -17,12 +17,10 @@ export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rat
     const n_epochs = _n_epochs
     const lr_rate = _lr_rate
     const n_hl = _n_hl
-    const size = 50
+    const size = 80
     window_size = _window_size
 
     data_raw = await convertData(dataSet)
-
-
     SMA = await computeSMA(dataSet,window_size)
 
     let inputs = SMA.map(function(inp_f:any) {
@@ -30,19 +28,17 @@ export const train = async (dataSet:SmartMeterSample[], _n_epochs:number,_lr_rat
             return val['wattsPerHour'];
         })});
 
-
-
     let outputs = SMA.map(function(outp_f:any) { return outp_f['avg']; });
 
     let callback = function(epoch:number, log:any) {
         const test = io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' }); // This will emit the event to all connected sockets
-        console.log(test)
+        //console.log(test)
         console.log("Epoch:"+ (epoch + 1) + " Loss: " + log.loss);
         console.log(((epoch + 1) * (100 / n_epochs)).toString() + "%");
     }
 
     result = await trainModel(inputs, outputs,
-        n_items, window_size, n_epochs, lr_rate, n_hl, callback);
+        size, window_size, n_epochs, lr_rate, n_hl, callback);
 
     LSTMmodel = result['model'];
     console.log('Model trained')
@@ -84,7 +80,7 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
     inputs = inputs.slice(0, Math.floor(size / 100 * inputs.length));
     outputs = outputs.slice(0, Math.floor(size / 100 * outputs.length));
 
-    const xs = tf.tensor2d(inputs, [inputs.length, inputs[0].length]).div(tf.scalar(10));
+    const xs = tf.tensor2d(inputs, [inputs.length, inputs[0].length]).div(tf.scalar(10)); // Tensors store the data (either in input or output format)
     const ys = tf.tensor2d(outputs, [outputs.length, 1]).reshape([outputs.length, 1]).div(tf.scalar(10));
 
     model.add(tf.layers.dense({units: input_layer_neurons, inputShape: [input_layer_shape]}));
@@ -118,97 +114,112 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
     let inputs = _SMA.map(function(inp_f:any) {
         return inp_f['set'].map(function (val:SmartMeterSample) { return val['wattsPerHour']; }); });
 
-    let outputs = _SMA.map(function(outp_f:any) { return outp_f['avg']; });
-
-    let outps = outputs.slice(Math.floor(n_items / 100 * outputs.length), outputs.length);
-
     let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
+    let known_pred_vals = makePredictions(inps, n_items, result['model']); // a list of prediction from length-n_items to the last sample
 
-    let pred_vals = await predict(inps, LSTMmodel);
+    let inpsf = [inputs[inputs.length -1].slice(0)].slice(0);
+    let future_prediction_vals = makePredictions(inpsf, n_items, result['model']);
 
     let timestamps_a = data_raw.map(function (val:any) { return val['timestamp']; });
     let timestamps_b = data_raw.map(function (val:any) {
         return val['timestamp']; }).splice(window_size, data_raw.length);
 
-    let timestamps_c = data_raw.map(function (val:any) {
-        return val['timestamp']; }).splice(window_size + Math.floor(n_items / 100 * outputs.length), data_raw.length);
 
-    let sma = _SMA.map(function (val:any) { return val['avg']; });
-    let prices = data_raw.map(function (val:any) { return val['wattsPerHour']; });
+    return {all_timestamps: timestamps_a,moving_avg_timestamps: timestamps_b, known_pred_values: known_pred_vals, future_prediction_values: future_prediction_vals}
 
-    let futureValues = [];
-    let futureTimeStamps = [];
-    let nextDay = [];
-    let lastStamp = timestamps_a[timestamps_a.length-1];
-
-    let mydate = new Date(lastStamp);
-    let month = mydate.getMonth();
-    let day = mydate.getDate();
-    let year = mydate.getFullYear();
-    let inpsf : any = [inputs[inputs.length -2]];
-
-    let hoursToPredict = 24;
-    let stringDay = (day < 10) ? "0"+day.toString() : day.toString() ;
-    let stringMonth = (month < 10) ? "0"+month.toString() : month.toString() ;
+    /*
+  let pred_vals = await predict(inps, LSTMmodel);
 
 
-    for(let i = 0; i < hoursToPredict; i++){
-        let fValue : any = await predict(inpsf, LSTMmodel);
-        fValue = fValue[0]
-        futureValues.push(fValue);
-        inpsf[0].shift();
+  let timestamps_a = data_raw.map(function (val:any) { return val['timestamp']; });
+  let timestamps_b = data_raw.map(function (val:any) {
+      return val['timestamp']; }).splice(window_size, data_raw.length);
 
-        inpsf[0].push(fValue);
+  let timestamps_c = data_raw.map(function (val:any) {
+      return val['timestamp']; }).splice(window_size + Math.floor(n_items / 100 * outputs.length), data_raw.length);
 
-        if(i < 10)
-            nextDay.push( year +"-"+stringMonth + "-"+ stringDay +"T0" +i +":00:00.000Z");
+  let sma = _SMA.map(function (val:any) { return val['avg']; });
+  let prices = data_raw.map(function (val:any) { return val['wattsPerHour']; });
 
-        else
-            nextDay.push( year +"-"+stringMonth+ "-" + stringDay +"T" + i +":00:00.000Z");
+  let futureValues = [];
+  let futureTimeStamps = [];
+  let nextDay = [];
+  let lastStamp = timestamps_a[timestamps_a.length-1];
 
-    }
+  let mydate = new Date(lastStamp);
+  let month = mydate.getMonth();
+  let day = mydate.getDate();
+  let year = mydate.getFullYear();
+  let inpsf : any = [inputs[inputs.length -2]];
 
-    let average = [];
-    for (let i = 0; i < 24; i++){
-        let inneravg = 0;
-        for(let k = 0; k < ((prices.length)/24); k++){
-            inneravg += prices[i+ k*24]
-        }
-        average.push(inneravg / ((prices.length)/24));
-    }
+  let hoursToPredict = 24;
+  let stringDay = (day < 10) ? "0"+day.toString() : day.toString() ;
+  let stringMonth = (month < 10) ? "0"+month.toString() : month.toString() ;
 
-    var averageAll = [];
-    let avgSum = 0;
 
-    for(let j = 0; j<prices.length; j++){
-        avgSum += prices[j];
-    }
-    avgSum = avgSum / prices.length;
+  for(let i = 0; i < window_size; i++){
+      let fValue : any = await predict(inpsf, LSTMmodel);
+      fValue = fValue[0]
+      futureValues.push(fValue);
+      inpsf[0].shift();
 
-    for(let y = 0; y <(timestamps_a.length+nextDay.length-1)  ; y++){
-        averageAll.push(avgSum);
-    }
+      inpsf[0].push(fValue);
 
-    let avgsumTimeLabel = [...timestamps_a, ...nextDay];
+      if(i < 10)
+          nextDay.push( year +"-"+stringMonth + "-"+ stringDay +"T0" +i +":00:00.000Z");
 
-    return {initial_timestamps: timestamps_a,
-        initial_wH: prices, moving_avg_timestamps: timestamps_b,
-        SMA: sma, next_day_timestamps: nextDay, prediction: futureValues,
-        combined_avg_Wh: average, avg_timestamps: avgsumTimeLabel, total_Wh_avg: averageAll
-    }
+      else
+          nextDay.push( year +"-"+stringMonth+ "-" + stringDay +"T" + i +":00:00.000Z");
+
+  }
+
+  let average = [];
+  for (let i = 0; i < 24; i++){
+      let inneravg = 0;
+      for(let k = 0; k < ((prices.length)/24); k++){
+          inneravg += prices[i+ k*24]
+      }
+      average.push(inneravg / ((prices.length)/24));
+  }
+
+  var averageAll = [];
+  let avgSum = 0;
+
+  for(let j = 0; j<prices.length; j++){
+      avgSum += prices[j];
+  }
+  avgSum = avgSum / prices.length;
+
+  for(let y = 0; y <(timestamps_a.length+nextDay.length-1)  ; y++){
+      averageAll.push(avgSum);
+  }
+
+  let avgsumTimeLabel = [...timestamps_a, ...nextDay];
+
+  return {og_pred: pred_vals,initial_timestamps: timestamps_a,
+      initial_wH: prices, moving_avg_timestamps: timestamps_b,
+      SMA: sma, next_day_timestamps: nextDay, prediction: futureValues,
+      combined_avg_Wh: average, avg_timestamps: avgsumTimeLabel, total_Wh_avg: averageAll
+  }
+
+   */
 }
-
+/*
 const predict = async (inps:any,model:any) : Promise <any> => {
     const outps = model.predict(tf.tensor2d(inps, [inps.length,
         inps[0].length]).div(tf.scalar(10))).mul(10);
     return Array.from(outps.dataSync());
 }
 
-interface rawDataStruct {
-    id: number,
-    wattsPerHour: number,
-    timestamp: Date
+ */
+
+function makePredictions(inputs:any, size:number, model:any)
+{
+    let X = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
+    const predictedResults = model.predict(tf.tensor2d(X, [X.length, X[0].length]).div(tf.scalar(10))).mul(10);
+    return Array.from(predictedResults.dataSync());
 }
+
 const convertData = async (input:SmartMeterSample[]) : Promise <any> =>{
     let dataset : Array<any> = []
     for(let i = 0; i < input.length-1; i++){

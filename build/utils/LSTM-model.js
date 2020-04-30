@@ -34,7 +34,7 @@ exports.train = (dataSet, _n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter
     let outputs = SMA.map(function (outp_f) { return outp_f['avg']; });
     let callback = function (epoch, log) {
         const test = index_1.io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' }); // This will emit the event to all connected sockets
-        console.log(test);
+        //console.log(test)
         console.log("Epoch:" + (epoch + 1) + " Loss: " + log.loss);
         console.log(((epoch + 1) * (100 / n_epochs)).toString() + "%");
     };
@@ -68,7 +68,7 @@ const trainModel = (inputs, outputs, size, window_size, n_epochs, learning_rate,
     const model = tf.sequential();
     inputs = inputs.slice(0, Math.floor(size / 100 * inputs.length));
     outputs = outputs.slice(0, Math.floor(size / 100 * outputs.length));
-    const xs = tf.tensor2d(inputs, [inputs.length, inputs[0].length]).div(tf.scalar(10));
+    const xs = tf.tensor2d(inputs, [inputs.length, inputs[0].length]).div(tf.scalar(10)); // Tensors store the data (either in input or output format)
     const ys = tf.tensor2d(outputs, [outputs.length, 1]).reshape([outputs.length, 1]).div(tf.scalar(10));
     model.add(tf.layers.dense({ units: input_layer_neurons, inputShape: [input_layer_shape] }));
     model.add(tf.layers.reshape({ targetShape: rnn_input_shape }));
@@ -95,68 +95,97 @@ exports.predictFuture = (dataSet) => __awaiter(void 0, void 0, void 0, function*
     let outputs = _SMA.map(function (outp_f) { return outp_f['avg']; });
     let outps = outputs.slice(Math.floor(n_items / 100 * outputs.length), outputs.length);
     let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
-    let pred_vals = yield predict(inps, exports.LSTMmodel);
-    let timestamps_a = data_raw.map(function (val) { return val['timestamp']; });
-    let timestamps_b = data_raw.map(function (val) {
-        return val['timestamp'];
-    }).splice(window_size, data_raw.length);
-    let timestamps_c = data_raw.map(function (val) {
-        return val['timestamp'];
-    }).splice(window_size + Math.floor(n_items / 100 * outputs.length), data_raw.length);
-    let sma = _SMA.map(function (val) { return val['avg']; });
-    let prices = data_raw.map(function (val) { return val['wattsPerHour']; });
-    let futureValues = [];
-    let futureTimeStamps = [];
-    let nextDay = [];
-    let lastStamp = timestamps_a[timestamps_a.length - 1];
-    let mydate = new Date(lastStamp);
-    let month = mydate.getMonth();
-    let day = mydate.getDate();
-    let year = mydate.getFullYear();
-    let inpsf = [inputs[inputs.length - 2]];
-    let hoursToPredict = 24;
-    let stringDay = (day < 10) ? "0" + day.toString() : day.toString();
-    let stringMonth = (month < 10) ? "0" + month.toString() : month.toString();
-    for (let i = 0; i < hoursToPredict; i++) {
-        let fValue = yield predict(inpsf, exports.LSTMmodel);
-        fValue = fValue[0];
-        futureValues.push(fValue);
-        inpsf[0].shift();
-        inpsf[0].push(fValue);
-        if (i < 10)
-            nextDay.push(year + "-" + stringMonth + "-" + stringDay + "T0" + i + ":00:00.000Z");
-        else
-            nextDay.push(year + "-" + stringMonth + "-" + stringDay + "T" + i + ":00:00.000Z");
-    }
-    let average = [];
-    for (let i = 0; i < 24; i++) {
-        let inneravg = 0;
-        for (let k = 0; k < ((prices.length) / 24); k++) {
-            inneravg += prices[i + k * 24];
-        }
-        average.push(inneravg / ((prices.length) / 24));
-    }
-    var averageAll = [];
-    let avgSum = 0;
-    for (let j = 0; j < prices.length; j++) {
-        avgSum += prices[j];
-    }
-    avgSum = avgSum / prices.length;
-    for (let y = 0; y < (timestamps_a.length + nextDay.length - 1); y++) {
-        averageAll.push(avgSum);
-    }
-    let avgsumTimeLabel = [...timestamps_a, ...nextDay];
-    return { initial_timestamps: timestamps_a,
-        initial_wH: prices, moving_avg_timestamps: timestamps_b,
-        SMA: sma, next_day_timestamps: nextDay, prediction: futureValues,
-        combined_avg_Wh: average, avg_timestamps: avgsumTimeLabel, total_Wh_avg: averageAll
-    };
+    let pred_vals = makePredictions(inputs, n_items, result['model']);
+    /*
+  let pred_vals = await predict(inps, LSTMmodel);
+
+
+  let timestamps_a = data_raw.map(function (val:any) { return val['timestamp']; });
+  let timestamps_b = data_raw.map(function (val:any) {
+      return val['timestamp']; }).splice(window_size, data_raw.length);
+
+  let timestamps_c = data_raw.map(function (val:any) {
+      return val['timestamp']; }).splice(window_size + Math.floor(n_items / 100 * outputs.length), data_raw.length);
+
+  let sma = _SMA.map(function (val:any) { return val['avg']; });
+  let prices = data_raw.map(function (val:any) { return val['wattsPerHour']; });
+
+  let futureValues = [];
+  let futureTimeStamps = [];
+  let nextDay = [];
+  let lastStamp = timestamps_a[timestamps_a.length-1];
+
+  let mydate = new Date(lastStamp);
+  let month = mydate.getMonth();
+  let day = mydate.getDate();
+  let year = mydate.getFullYear();
+  let inpsf : any = [inputs[inputs.length -2]];
+
+  let hoursToPredict = 24;
+  let stringDay = (day < 10) ? "0"+day.toString() : day.toString() ;
+  let stringMonth = (month < 10) ? "0"+month.toString() : month.toString() ;
+
+
+  for(let i = 0; i < window_size; i++){
+      let fValue : any = await predict(inpsf, LSTMmodel);
+      fValue = fValue[0]
+      futureValues.push(fValue);
+      inpsf[0].shift();
+
+      inpsf[0].push(fValue);
+
+      if(i < 10)
+          nextDay.push( year +"-"+stringMonth + "-"+ stringDay +"T0" +i +":00:00.000Z");
+
+      else
+          nextDay.push( year +"-"+stringMonth+ "-" + stringDay +"T" + i +":00:00.000Z");
+
+  }
+
+  let average = [];
+  for (let i = 0; i < 24; i++){
+      let inneravg = 0;
+      for(let k = 0; k < ((prices.length)/24); k++){
+          inneravg += prices[i+ k*24]
+      }
+      average.push(inneravg / ((prices.length)/24));
+  }
+
+  var averageAll = [];
+  let avgSum = 0;
+
+  for(let j = 0; j<prices.length; j++){
+      avgSum += prices[j];
+  }
+  avgSum = avgSum / prices.length;
+
+  for(let y = 0; y <(timestamps_a.length+nextDay.length-1)  ; y++){
+      averageAll.push(avgSum);
+  }
+
+  let avgsumTimeLabel = [...timestamps_a, ...nextDay];
+
+  return {og_pred: pred_vals,initial_timestamps: timestamps_a,
+      initial_wH: prices, moving_avg_timestamps: timestamps_b,
+      SMA: sma, next_day_timestamps: nextDay, prediction: futureValues,
+      combined_avg_Wh: average, avg_timestamps: avgsumTimeLabel, total_Wh_avg: averageAll
+  }
+
+   */
 });
-const predict = (inps, model) => __awaiter(void 0, void 0, void 0, function* () {
+/*
+const predict = async (inps:any,model:any) : Promise <any> => {
     const outps = model.predict(tf.tensor2d(inps, [inps.length,
         inps[0].length]).div(tf.scalar(10))).mul(10);
     return Array.from(outps.dataSync());
-});
+}
+
+ */
+function makePredictions(inputs, size, model) {
+    let X = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
+    const predictedResults = model.predict(tf.tensor2d(X, [X.length, X[0].length]).div(tf.scalar(10))).mul(10);
+    return Array.from(predictedResults.dataSync());
+}
 const convertData = (input) => __awaiter(void 0, void 0, void 0, function* () {
     let dataset = [];
     for (let i = 0; i < input.length - 1; i++) {
