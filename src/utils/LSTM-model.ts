@@ -138,6 +138,8 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
     console.log(inputs.length)
 
     let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
+    console.log("//////////////inps /////////////////")
+    console.log(inps.length)
     let known_pred_vals = makePredictions(inps, n_items, result['model']); // a list of prediction from length-n_items to the last sample
 
 
@@ -155,7 +157,11 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
 
 function makePredictions(inputs:any, size:number, model:any)
 {
+    console.log("//////////////inputs f /////////////////")
+    console.log(inputs.length)
     var inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
+    console.log("//////////////inps f /////////////////")
+    console.log(inps.length)
     const outps = model.predict(tf.tensor2d(inps, [inps.length,
         inps[0].length]).div(tf.scalar(10))).mul(10);
 
