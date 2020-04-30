@@ -5,6 +5,7 @@ import {validationResult} from "express-validator";
 import User from "../models/User";
 import Admin from "../models/Admin";
 import sequelize, {Op} from "sequelize";
+import {convertTime} from "../utils/timeConverter";
 
 export const getAdminsAndUsers = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {
@@ -120,8 +121,10 @@ export const avgSpending = async (req:Request, res:Response, next: NextFunction)
 
             const user = await User.findOne({where:{id: req.params.id}})
             if (user){
-                const startDate : any = new Date(req.query.startDate.toString())
-                const endDate : any = new Date(req.query.endDate.toString())
+                let startDate : any = new Date(req.query.startDate.toString())
+                let endDate : any = new Date(req.query.endDate.toString())
+                startDate = convertTime(startDate,false)
+                endDate = convertTime(endDate,true)
                 const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
                 if (smartMeterSamples.length != 0){
                     let totalWh : number = 0

@@ -1,6 +1,8 @@
 
 import SmartMeterSample from "../models/Smart-meter-sample";
 import {io} from '../index'
+import {convertTime} from "./timeConverter";
+
 const tf = require('@tensorflow/tfjs-node')
 
 export let LSTMmodel : any
@@ -169,7 +171,9 @@ const convertData = async (inputData:SmartMeterSample[]) : Promise <any> =>{
 
     let dataset : Array<any> = []
     for(let i = 0; i < inputData.length-1; i++){
-        dataset.push({id: inputData[i].id, wattsPerHour: inputData[i].wattsPerHour, timestamp: inputData[i].date })
+
+        let convertedTime = convertTime(inputData[i].date, false)
+        dataset.push({id: inputData[i].id, wattsPerHour: inputData[i].wattsPerHour, timestamp: convertedTime})
     }
     return dataset
 

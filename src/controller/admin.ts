@@ -2,6 +2,7 @@ import {NextFunction, Request, Response} from "express";
 import {validationResult} from "express-validator";
 import SmartMeterSample from "../models/Smart-meter-sample";
 import sequelize, {Op} from 'sequelize'
+import {convertTime} from '../utils/timeConverter'
 import querystring from 'querystring';
 import Admin from "../models/Admin";
 import User from "../models/User";
@@ -35,12 +36,11 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
             console.log(req.body)
             const user = await User.findOne({where:{id: req.params.id, adminId: req.body.id}})
             if (user){
-                const startDate : any = new Date(req.query.startDate.toString())
-                console.log(startDate)
+                let startDate : any = new Date(req.query.startDate.toString())
+                let endDate : any = new Date(req.query.endDate.toString())
+                startDate = convertTime(startDate,false)
+                endDate = convertTime(endDate,true)
 
-                startDate.setHours(startDate.getHours() - 2)
-                const endDate : any = new Date(req.query.endDate.toString())
-                endDate.setHours(24 - 2)
                 const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
                 if (smartMeterSamples.length != 0){
                     res.status(200).json({success: true, result: {smartMeterSamples}})
