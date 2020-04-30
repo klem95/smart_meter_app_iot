@@ -67,8 +67,7 @@ export const getPredictions = async (req:Request,res:Response, next:NextFunction
                 if (meterId != undefined){
                     const meterData = await SmartMeterSample.findAll({where:{meterId: meterId}})
 
-                    console.log("meterId: " + meterId)
-                    console.log( meterData)
+
                     const predictions = await predictFuture(meterData)
                     res.status(200).json({predictions})
                 }
