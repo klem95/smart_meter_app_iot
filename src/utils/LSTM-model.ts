@@ -172,7 +172,7 @@ const convertData = async (inputData:SmartMeterSample[]) : Promise <any> =>{
     let dataset : Array<any> = []
     for(let i = 0; i < inputData.length-1; i++){
 
-        let convertedTime = convertTime(inputData[i].date, false)
+        let convertedTime = await convertTime(inputData[i].date, false)
         dataset.push({id: inputData[i].id, wattsPerHour: inputData[i].wattsPerHour, timestamp: convertedTime})
     }
     return dataset
