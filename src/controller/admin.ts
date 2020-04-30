@@ -36,7 +36,11 @@ export const ReturnSamples = async (req: Request, res: Response, next: NextFunct
             const user = await User.findOne({where:{id: req.params.id, adminId: req.body.id}})
             if (user){
                 const startDate : any = new Date(req.query.startDate.toString())
+                console.log(startDate)
+
+                startDate.setHours(startDate.getHours() - 2)
                 const endDate : any = new Date(req.query.endDate.toString())
+                endDate.setHours(24 - 2)
                 const smartMeterSamples = await SmartMeterSample.findAll({where:{meterId: user.meterId, date:{ [Op.between]: [startDate, endDate]} }})
                 if (smartMeterSamples.length != 0){
                     res.status(200).json({success: true, result: {smartMeterSamples}})
