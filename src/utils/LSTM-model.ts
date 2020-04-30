@@ -153,7 +153,7 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
         return val['timestamp']; }).splice(window_size, data_raw.length);
 
 
-    return {inputs: inputs, inps:inps, known_pred_vals:known_pred_vals}
+    return  known_pred_vals[known_pred_vals.length-1]
 
 }
 
