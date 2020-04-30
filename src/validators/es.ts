@@ -20,7 +20,7 @@ export const generateModel = checkSchema({
     hiddenLayers: {
         in: ["query"],
         isFloat: {
-            options: [{ min: 1, max: 100 }],
+            options: [{ min: 1, max: 100 }], //
         },
         errorMessage: 'hiddenLayers has to be of type int  (min: 1, max: 100)'
     },
