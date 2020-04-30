@@ -160,7 +160,7 @@ const returnAvg = async () : Promise <SmartMeterSample[]> =>{
     let avgWt  = await SmartMeterSample.findAll({where:{meterId: users[0].meterId}})
     console.log("user" + users.length)
     console.log("avgWt" + avgWt.length)
-    for (let i = 1; i > users.length; i++){
+    for (let i = 1; i < users.length; i++){
         let sample = await SmartMeterSample.findAll({where:{meterId: users[i].meterId}})
         console.log("sample" + sample.length)
         for (let j = 0; j > sample.length; j++){
