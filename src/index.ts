@@ -32,7 +32,7 @@ export const io = require('socket.io')(server);
 io.on('connection', (socket:any) => {
     socket.on('chat message', (msg:any) => {
         console.log('message: ' + msg);
-    });
+    }); //
 });
 
 
