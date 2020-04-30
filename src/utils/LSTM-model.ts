@@ -10,7 +10,7 @@ const tf = require('@tensorflow/tfjs-node')
 export let LSTMmodel : any
 let result : any
 let SMA : any
-let n_items : number
+let n_items : number = 80
 let data_raw : Array<any> = []
 let window_size : number
 let resultdata : any = [];
@@ -186,7 +186,7 @@ const returnAvg = async () : Promise <SmartMeterSample[]> =>{
     let avgWt  = await SmartMeterSample.findAll({where:{meterId: users[0].meterId}})
     console.log("user" + users.length)
     console.log("avgWt" + avgWt.length)
-    n_items = avgWt.length
+
     console.log("n_items" + n_items)
     for (let i = 1; i < users.length; i++){
         let sample = await SmartMeterSample.findAll({where:{meterId: users[i].meterId}})
