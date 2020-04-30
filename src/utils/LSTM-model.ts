@@ -123,21 +123,19 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
 
 
 export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> => {
-    console.log("//////////////Tryinh to predict! /////////////////")
      data_raw = await convertData(dataSet)
-
     console.log("//////////////dataSet /////////////////")
-    console.log(data_raw)
+    console.log(data_raw.length)
     //data_raw = GenerateDataset(n_items);
     const _SMA = await computeSMA(data_raw,window_size)
-    console.log("//////////////dataSet /////////////////")
-    console.log(_SMA)
+    console.log("//////////////_SMA /////////////////")
+    console.log(_SMA.length)
 
     let inputs = _SMA.map(function(inp_f:any) {
         return inp_f['set'].map(function (val:any) { return val['wattsPerHour']; }); });
 
     console.log("//////////////inputs /////////////////")
-    console.log(inputs)
+    console.log(inputs.length)
 
     let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
     let known_pred_vals = makePredictions(inps, n_items, result['model']); // a list of prediction from length-n_items to the last sample
