@@ -15,24 +15,25 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Smart_meter_sample_1 = __importDefault(require("../models/Smart-meter-sample"));
 const index_1 = require("../index");
 const timeConverter_1 = require("./timeConverter");
-const sequelize_1 = __importDefault(require("sequelize"));
 const User_1 = __importDefault(require("../models/User"));
 const tf = require('@tensorflow/tfjs-node');
 let result;
 let SMA;
-let n_items;
+let n_items = 80;
 let data_raw = [];
 let window_size;
 let resultdata = [];
-exports.train = (dataSet, _n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter(void 0, void 0, void 0, function* () {
+exports.modelTraining = false;
+exports.train = (_n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Training model');
     const n_epochs = _n_epochs;
     const lr_rate = _lr_rate;
     const n_hl = _n_hl;
     const size = 80;
-    n_items = dataSet.length;
     window_size = _window_size;
-    data_raw = yield convertData(yield returnAvg());
+    const avg = yield returnAvg();
+    exports.modelTraining = true;
+    data_raw = yield convertData(avg);
     //data_raw = GenerateDataset(n_items);
     SMA = yield computeSMA(data_raw, window_size);
     // console.log(tdata_raw.length)
@@ -51,6 +52,7 @@ exports.train = (dataSet, _n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter
     };
     result = yield trainModel(inputs, outputs, n_items, window_size, n_epochs, lr_rate, n_hl, callback);
     exports.LSTMmodel = result['model'];
+    exports.modelTraining = false;
     console.log('Model trained');
 });
 const computeSMA = (_data, windowSize) => __awaiter(void 0, void 0, void 0, function* () {
@@ -112,7 +114,7 @@ exports.predictFuture = (dataSet) => __awaiter(void 0, void 0, void 0, function*
     let timestamps_b = data_raw.map(function (val) {
         return val['timestamp'];
     }).splice(window_size, data_raw.length);
-    return { inputs: inputs, inps: inps, known_pred_vals: known_pred_vals };
+    return known_pred_vals[known_pred_vals.length - 1];
 });
 function makePredictions(inputs, size, model) {
     var inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
@@ -121,20 +123,18 @@ function makePredictions(inputs, size, model) {
     return Array.from(outps.dataSync());
 }
 const returnAvg = () => __awaiter(void 0, void 0, void 0, function* () {
-    const smart0 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 0 } });
-    const smart1 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 1 } });
-    const smart2 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 2 } });
-    const smart3 = yield Smart_meter_sample_1.default.findAll({ where: { meterId: 3 } });
-    const { count, rows } = yield User_1.default.findAndCountAll({
-        attributes: [
-            [sequelize_1.default.fn('DISTINCT', sequelize_1.default.col('meterId')), 'meterId'],
-        ],
-    });
-    console.log(rows);
-    for (let i = 0; i > smart0.length; i++) {
-        smart0[i].wattsPerHour = (smart0[i].wattsPerHour + smart1[i].wattsPerHour + smart2[i].wattsPerHour + smart3[i].wattsPerHour) / 4;
+    const users = yield User_1.default.findAll();
+    let avgWt = yield Smart_meter_sample_1.default.findAll({ where: { meterId: users[0].meterId } });
+    for (let i = 1; i < users.length; i++) {
+        let sample = yield Smart_meter_sample_1.default.findAll({ where: { meterId: users[i].meterId } });
+        for (let j = 0; j > sample.length; j++) {
+            avgWt[j].wattsPerHour += sample[j].wattsPerHour;
+        }
     }
-    return smart0;
+    for (let i = 0; i > avgWt.length; i++) {
+        avgWt[i].wattsPerHour = avgWt[i].wattsPerHour / users.length;
+    }
+    return avgWt;
 });
 const convertData = (inputData) => __awaiter(void 0, void 0, void 0, function* () {
     let dataset = [];

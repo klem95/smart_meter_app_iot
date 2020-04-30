@@ -26,6 +26,7 @@ const User_1 = __importDefault(require("../models/User"));
 const Admin_1 = __importDefault(require("../models/Admin"));
 const sequelize_1 = __importStar(require("sequelize"));
 const timeConverter_1 = require("../utils/timeConverter");
+const LSTM_model_2 = require("../utils/LSTM-model");
 exports.getAdminsAndUsers = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const admins = yield Admin_1.default.findAll();
@@ -54,14 +55,17 @@ exports.generateModel = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     try {
         const valError = express_validator_1.validationResult(req);
         if (valError.isEmpty()) {
-            const epochsNo = parseInt(req.query.epochsNo.toString());
-            const learningRate = parseFloat(req.query.learningRate.toString());
-            const hiddenLayers = parseInt(req.query.hiddenLayers.toString());
-            const windowSize = parseInt(req.query.windowSize.toString());
-            const meterId = parseInt(req.query.meterId.toString());
-            const waterSamples = yield Smart_meter_sample_1.default.findAll({ where: { meterId: meterId } });
-            const result = yield LSTM_model_1.train(waterSamples, epochsNo, learningRate, hiddenLayers, windowSize);
-            res.status(200).json({ success: true, result: "Model is trained" });
+            if (!LSTM_model_2.modelTraining) {
+                const epochsNo = parseInt(req.query.epochsNo.toString());
+                const learningRate = parseFloat(req.query.learningRate.toString());
+                const hiddenLayers = parseInt(req.query.hiddenLayers.toString());
+                const windowSize = parseInt(req.query.windowSize.toString());
+                const result = yield LSTM_model_1.train(epochsNo, learningRate, hiddenLayers, windowSize);
+                res.status(200).json({ success: true, result: "Model is trained" });
+            }
+            else {
+                res.status(503).json({ message: "Model is already being trained. Please wait..." });
+            }
         }
         else {
             res.status(400).json({ error: valError });
@@ -78,11 +82,10 @@ exports.getPredictions = (req, res, next) => __awaiter(void 0, void 0, void 0, f
             if (LSTM_model_1.LSTMmodel != undefined) {
                 const user = yield User_1.default.findOne({ where: { id: req.params.id } });
                 const meterId = user === null || user === void 0 ? void 0 : user.meterId;
-                console.log(user);
                 if (meterId != undefined) {
                     const meterData = yield Smart_meter_sample_1.default.findAll({ where: { meterId: meterId } });
-                    const predictions = yield LSTM_model_1.predictFuture(meterData);
-                    res.status(200).json({ predictions });
+                    const prediction = yield LSTM_model_1.predictFuture(meterData);
+                    res.status(200).json({ prediction });
                 }
             }
             else {

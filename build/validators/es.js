@@ -15,18 +15,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_validator_1 = require("express-validator");
 const User_1 = __importDefault(require("../models/User"));
 exports.generateModel = express_validator_1.checkSchema({
-    meterId: {
-        in: ["query"],
-        isInt: true,
-        errorMessage: 'meterId has to be of type int',
-        custom: {
-            options: (val) => __awaiter(void 0, void 0, void 0, function* () {
-                if ((yield User_1.default.count({ where: { meterId: val } })) === 0)
-                    return Promise.reject();
-            }),
-            errorMessage: 'The provided id does not match any meter'
-        }
-    },
     epochsNo: {
         in: ["query"],
         isInt: {

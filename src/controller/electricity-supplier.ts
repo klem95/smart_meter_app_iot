@@ -65,14 +65,18 @@ export const getPredictions = async (req:Request,res:Response, next:NextFunction
         const valError = validationResult(req)
         if (valError) {
             if(LSTMmodel != undefined) {
-                const user = await User.findOne({where:{id: req.params.id}})
-                const meterId = user?.meterId
-                if (meterId != undefined){
-                    const meterData = await SmartMeterSample.findAll({where:{meterId: meterId}})
+                if (!modelTraining) {
+                    const user = await User.findOne({where:{id: req.params.id}})
+                    const meterId = user?.meterId
+                    if (meterId != undefined){
+                        const meterData = await SmartMeterSample.findAll({where:{meterId: meterId}})
 
+                        const prediction = await predictFuture(meterData)
+                        res.status(200).json({prediction})
+                } else{
+                        res.status(503).json({message: "Model is already being trained. Please wait..."})
+                    }
 
-                    const prediction = await predictFuture(meterData)
-                    res.status(200).json({prediction})
                 }
             } else {
                 res.status(400).json({error: "Please train model"})

@@ -129,10 +129,10 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
 
 
 export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> => {
-     data_raw = await convertData(dataSet)
+     let _data_raw = await convertData(dataSet)
 
     //data_raw = GenerateDataset(n_items);
-    const _SMA = await computeSMA(data_raw,window_size)
+    const _SMA = await computeSMA(_data_raw,window_size)
 
 
     let inputs = _SMA.map(function(inp_f:any) {
@@ -148,9 +148,9 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
     let inpsf = [inputs[inputs.length -1].slice(0)].slice(0);
     let future_prediction_vals = makePredictions(inpsf, n_items,  result['model']);
 
-    let timestamps_a = data_raw.map(function (val:any) { return val['timestamp']; });
-    let timestamps_b = data_raw.map(function (val:any) {
-        return val['timestamp']; }).splice(window_size, data_raw.length);
+    let timestamps_a = _data_raw.map(function (val:any) { return val['timestamp']; });
+    let timestamps_b = _data_raw.map(function (val:any) {
+        return val['timestamp']; }).splice(window_size, _data_raw.length);
 
 
     return  known_pred_vals[known_pred_vals.length-1]
