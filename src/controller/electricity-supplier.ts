@@ -49,7 +49,7 @@ export const generateModel = async (req:Request,res:Response, next:NextFunction)
                 const result = await train(epochsNo,learningRate,hiddenLayers,windowSize)
                 res.status(200).json({success: true, result: "Model is trained"})
             } else {
-                res.status(503).json({message: "Model is already being trained. Please wait..."})
+                res.status(204).json({message: "Model is already being trained. Please wait..."})
             }
         } else {
             res.status(400).json({error: valError})
@@ -74,7 +74,7 @@ export const getPredictions = async (req:Request,res:Response, next:NextFunction
                         const prediction = await predictFuture(meterData)
                         res.status(200).json({prediction})
                 } else{
-                        res.status(503).json({message: "Model is already being trained. Please wait..."})
+                        res.status(204).json({message: "Model is already being trained. Please wait..."})
                     }
 
                 }
