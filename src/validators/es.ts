@@ -3,19 +3,6 @@ import User from "../models/User";
 
 
 export const generateModel = checkSchema({
-    meterId: {
-        in: ["query"],
-        isInt: true,
-        errorMessage: 'meterId has to be of type int',
-        custom: {
-            options: async val => {
-                if (await User.count({where:{meterId: val}}) === 0)
-                    return Promise.reject()
-            },
-            errorMessage: 'The provided id does not match any meter'
-        }
-    },
-
     epochsNo: {
         in: ["query"],
         isInt: {
