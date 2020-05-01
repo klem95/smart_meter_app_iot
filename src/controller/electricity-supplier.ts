@@ -58,7 +58,7 @@ export const generateModel = async (req:Request,res:Response, next:NextFunction)
         next(new Error('Error! Could not build model'))
     }
 
-}
+} //
 
 export const getPredictions = async (req:Request,res:Response, next:NextFunction) : Promise<void> => {
     try {
