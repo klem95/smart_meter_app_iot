@@ -149,7 +149,14 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
     let inpsf = [inputs[inputs.length -1].slice(0)].slice(0);
     let future_prediction_vals = makePredictions(inpsf, size,  result['model']);
 
-    return  known_pred_vals[known_pred_vals.length-1]
+    console.log('////////////////////// pred input //////////////////////')
+    console.log(known_pred_vals[known_pred_vals.length-1])
+    let conv : any = known_pred_vals[known_pred_vals.length-1]
+    console.log(conv * 10)
+    console.log('//////////////////////////////////////////////////////////')
+
+
+    return  conv * 10
 
 }
 
@@ -189,7 +196,7 @@ const convertData = async (inputData:SmartMeterSample[]) : Promise <any> =>{
     for(let i = 0; i < inputData.length-1; i++){
 
         let convertedTime = await convertTime(inputData[i].date, false)
-        dataset.push({id: inputData[i].id, wattsPerHour: inputData[i].wattsPerHour, timestamp: convertedTime})
+        dataset.push({id: inputData[i].id, wattsPerHour: inputData[i].wattsPerHour / 10, timestamp: convertedTime})
     }
     return dataset
 
