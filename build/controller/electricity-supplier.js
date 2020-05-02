@@ -64,7 +64,7 @@ exports.generateModel = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
                 res.status(200).json({ success: true, result: "Model is trained" });
             }
             else {
-                res.status(503).json({ message: "Model is already being trained. Please wait..." });
+                res.status(204).json({ message: "Model is already being trained. Please wait..." });
             }
         }
         else {
@@ -74,18 +74,23 @@ exports.generateModel = (req, res, next) => __awaiter(void 0, void 0, void 0, fu
     catch (e) {
         next(new Error('Error! Could not build model'));
     }
-});
+}); // //
 exports.getPredictions = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const valError = express_validator_1.validationResult(req);
         if (valError) {
             if (LSTM_model_1.LSTMmodel != undefined) {
-                const user = yield User_1.default.findOne({ where: { id: req.params.id } });
-                const meterId = user === null || user === void 0 ? void 0 : user.meterId;
-                if (meterId != undefined) {
-                    const meterData = yield Smart_meter_sample_1.default.findAll({ where: { meterId: meterId } });
-                    const prediction = yield LSTM_model_1.predictFuture(meterData);
-                    res.status(200).json({ prediction });
+                if (!LSTM_model_2.modelTraining) {
+                    const user = yield User_1.default.findOne({ where: { id: req.params.id } });
+                    const meterId = user === null || user === void 0 ? void 0 : user.meterId;
+                    if (meterId != undefined) {
+                        const meterData = yield Smart_meter_sample_1.default.findAll({ where: { meterId: meterId } });
+                        const prediction = yield LSTM_model_1.predictFuture(meterData);
+                        res.status(200).json({ prediction });
+                    }
+                    else {
+                        res.status(204).json({ message: "Model is already being trained. Please wait..." });
+                    }
                 }
             }
             else {

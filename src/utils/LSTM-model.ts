@@ -15,14 +15,14 @@ let data_raw : Array<any> = []
 let window_size : number
 let resultdata : any = [];
 export let modelTraining : boolean = false
-
+const size = 80
 
 export const train = async ( _n_epochs:number,_lr_rate:number,_n_hl:number, _window_size:number) : Promise<void> => {
     console.log('Training model')
     const n_epochs = _n_epochs
     const lr_rate = _lr_rate
     const n_hl = _n_hl
-    const size = 80
+
 
     window_size = _window_size
 
@@ -56,7 +56,7 @@ export const train = async ( _n_epochs:number,_lr_rate:number,_n_hl:number, _win
     }
 
     result = await trainModel(inputs, outputs,
-        n_items, window_size, n_epochs, lr_rate, n_hl, callback);
+        size, window_size, n_epochs, lr_rate, n_hl, callback);
 
     LSTMmodel = result['model'];
     modelTraining = false
@@ -94,8 +94,6 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
     const output_layer_shape = rnn_output_neurons;
     const output_layer_neurons = 1;
 
-
-
     const model = tf.sequential();
 
     inputs = inputs.slice(0, Math.floor(size / 100 * inputs.length));
@@ -131,27 +129,21 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
 export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> => {
      let _data_raw = await convertData(dataSet)
 
+
     //data_raw = GenerateDataset(n_items);
     const _SMA = await computeSMA(_data_raw,window_size)
-
 
     let inputs = _SMA.map(function(inp_f:any) {
         return inp_f['set'].map(function (val:any) { return val['wattsPerHour']; }); });
 
 
 
-    let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
 
-    let known_pred_vals = makePredictions(inps, n_items, result['model']); // a list of prediction from length-n_items to the last sample
-
+    let inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
+    let known_pred_vals = makePredictions(inps, size, result['model']); // a list of prediction from length-n_items to the last sample
 
     let inpsf = [inputs[inputs.length -1].slice(0)].slice(0);
-    let future_prediction_vals = makePredictions(inpsf, n_items,  result['model']);
-
-    let timestamps_a = _data_raw.map(function (val:any) { return val['timestamp']; });
-    let timestamps_b = _data_raw.map(function (val:any) {
-        return val['timestamp']; }).splice(window_size, _data_raw.length);
-
+    let future_prediction_vals = makePredictions(inpsf, size,  result['model']);
 
     return  known_pred_vals[known_pred_vals.length-1]
 

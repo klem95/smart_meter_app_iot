@@ -67,7 +67,9 @@ export const getPredictions = async (req:Request,res:Response, next:NextFunction
             if(LSTMmodel != undefined) {
                 if (!modelTraining) {
                     const user = await User.findOne({where:{id: req.params.id}})
+
                     const meterId = user?.meterId
+
                     if (meterId != undefined){
                         const meterData = await SmartMeterSample.findAll({where:{meterId: meterId}})
 

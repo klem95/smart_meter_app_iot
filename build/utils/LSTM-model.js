@@ -24,12 +24,12 @@ let data_raw = [];
 let window_size;
 let resultdata = [];
 exports.modelTraining = false;
+const size = 80;
 exports.train = (_n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter(void 0, void 0, void 0, function* () {
     console.log('Training model');
     const n_epochs = _n_epochs;
     const lr_rate = _lr_rate;
     const n_hl = _n_hl;
-    const size = 80;
     window_size = _window_size;
     const avg = yield returnAvg();
     exports.modelTraining = true;
@@ -50,7 +50,7 @@ exports.train = (_n_epochs, _lr_rate, _n_hl, _window_size) => __awaiter(void 0, 
         console.log("Epoch:" + (epoch + 1) + " Loss: " + log.loss);
         console.log(((epoch + 1) * (100 / n_epochs)).toString() + "%");
     };
-    result = yield trainModel(inputs, outputs, n_items, window_size, n_epochs, lr_rate, n_hl, callback);
+    result = yield trainModel(inputs, outputs, size, window_size, n_epochs, lr_rate, n_hl, callback);
     exports.LSTMmodel = result['model'];
     exports.modelTraining = false;
     console.log('Model trained');
@@ -100,20 +100,22 @@ const trainModel = (inputs, outputs, size, window_size, n_epochs, learning_rate,
     return { model: model, stats: hist };
 });
 exports.predictFuture = (dataSet) => __awaiter(void 0, void 0, void 0, function* () {
-    data_raw = yield convertData(dataSet);
+    let _data_raw = yield convertData(dataSet);
+    console.log('////////////////////// window input //////////////////////');
+    console.log(_data_raw[0].meterId);
+    console.log('//////////////////////////////////////////////////////////');
     //data_raw = GenerateDataset(n_items);
-    const _SMA = yield computeSMA(data_raw, window_size);
+    const _SMA = yield computeSMA(_data_raw, window_size);
     let inputs = _SMA.map(function (inp_f) {
         return inp_f['set'].map(function (val) { return val['wattsPerHour']; });
     });
-    let inps = inputs.slice(Math.floor(n_items / 100 * inputs.length), inputs.length);
-    let known_pred_vals = makePredictions(inps, n_items, result['model']); // a list of prediction from length-n_items to the last sample
+    console.log('////////////////////// window input //////////////////////');
+    console.log(inputs);
+    console.log('//////////////////////////////////////////////////////////');
+    let inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
+    let known_pred_vals = makePredictions(inps, size, result['model']); // a list of prediction from length-n_items to the last sample
     let inpsf = [inputs[inputs.length - 1].slice(0)].slice(0);
-    let future_prediction_vals = makePredictions(inpsf, n_items, result['model']);
-    let timestamps_a = data_raw.map(function (val) { return val['timestamp']; });
-    let timestamps_b = data_raw.map(function (val) {
-        return val['timestamp'];
-    }).splice(window_size, data_raw.length);
+    let future_prediction_vals = makePredictions(inpsf, size, result['model']);
     return known_pred_vals[known_pred_vals.length - 1];
 });
 function makePredictions(inputs, size, model) {

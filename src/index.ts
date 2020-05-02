@@ -14,8 +14,6 @@ const cors = require('cors')
 const port = process.env.PORT || 3000
 const app = express()
 
-
-
 const server = app.listen(port, async () : Promise<void> =>  {
     try {
         await sequelize.sync()
@@ -34,8 +32,6 @@ io.on('connection', (socket:any) => {
         console.log('message: ' + msg);
     });
 });
-
-
 
 app.use(cors())
 app.use(bodyParser.urlencoded({extended:true}))
