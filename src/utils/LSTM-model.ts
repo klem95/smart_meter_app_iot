@@ -128,7 +128,9 @@ const trainModel = async (inputs:any, outputs:any, size:number, window_size:numb
 
 export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> => {
      let _data_raw = await convertData(dataSet)
-
+    console.log('////////////////////// data metric //////////////////////')
+    console.log(dataSet[0].meterId)
+    console.log('//////////////////////////////////////////////////////////')
 
     //data_raw = GenerateDataset(n_items);
     const _SMA = await computeSMA(_data_raw,window_size)
@@ -136,7 +138,9 @@ export const predictFuture = async (dataSet:SmartMeterSample[]) : Promise<any> =
     let inputs = _SMA.map(function(inp_f:any) {
         return inp_f['set'].map(function (val:any) { return val['wattsPerHour']; }); });
 
-
+    console.log('////////////////////// window input //////////////////////')
+    console.log(inputs)
+    console.log('//////////////////////////////////////////////////////////')
 
 
     let inps = inputs.slice(Math.floor(size / 100 * inputs.length), inputs.length);
